@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile - GameStore</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+  <header class="bg-gray-800 shadow p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">GameStore</h1>
+      <a href="dashboard.html" class="text-blue-400 hover:underline">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <main class="container mx-auto mt-6 px-4">
+    <!-- Top Profile Info -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg flex items-center space-x-6">
+      <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="User Avatar" class="w-24 h-24 rounded-full">
+      <div class="text-lg">
+        <h2 class="font-semibold">Player's Name</h2>
+        <p>Member Since: January 2025</p>
+      </div>
+    </div>
+
+    <!-- User Stats -->
+    <div class="mt-10 space-y-8">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-bold mb-4">Game Stats</h3>
+        <p>Games Played: 125</p>
+        <p>Games Owned: 75</p>
+        <p>Completed Games: 43</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-bold mb-4">Account Settings</h3>
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-md">Change Password</button>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md mt-4">Delete Account</button>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
