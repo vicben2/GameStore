@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forums - Game Store</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #181818;
+      color: #e5e5e5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #171717;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+    }
+    nav ul li {
+      margin: 0 15px;
+    }
+    nav ul li a {
+      color: #66c0f4;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+    #forum-content {
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #232323;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    h2, h3, h4 {
+      color: #fff;
+    }
+    #forum-threads {
+      margin-bottom: 20px;
+    }
+    .forum-thread {
+      background-color: #2c2c2c;
+      padding: 15px;
+      border: 1px solid #444;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .forum-thread h3 {
+      margin-top: 0;
+      color: #66c0f4;
+    }
+    .forum-thread p {
+      color: #bbb;
+    }
+    .new-thread-btn {
+      padding: 10px 20px;
+      background-color: #66c0f4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .new-thread-btn:hover {
+      background-color: #4fa3c7;
+    }
+    .comment-box {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background-color: #2c2c2c;
+      color: #bbb;
+    }
+    .add-comment {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .comment-input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: #fff;
+    }
+    .comment-btn {
+      flex-shrink: 0;
+    }
+    #new-thread-form {
+      display: none;
+      padding: 20px;
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #232323;
+      border: 1px solid #444;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #66c0f4;
+      box-shadow: 0 0 5px rgba(102, 192, 244, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Game Store - Forums</h1>
+    <nav>
+      <ul>
+        <li><a href="forums.html">Forums</a></li>
+        <li><a href="games.html">Games</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="forum-content">
+      <h2>Welcome to the Forums!</h2>
+      <p>Discuss games, share tips, or chat with others in the community.</p>
+
+      <button class="new-thread-btn" onclick="showNewThreadForm()">Post a New Thread</button>
+
+      <div id="forum-threads">
+        <div class="forum-thread">
+          <h3>How to level up faster in Game A?</h3>
+          <p>Posted by User123 - Last comment: 2 hours ago</p>
+          <div class="comment-box">
+            <h4>Comments:</h4>
+            <div class="comment-list">
+              <p><strong>GameFan456:</strong> Try focusing on main quests first!</p>
+              <p><strong>ProGamer789:</strong> Don't forget about side missions!</p>
+            </div>
+            <div class="add-comment">
+              <input type="text" class="comment-input" placeholder="Add a comment...">
+              <button class="new-thread-btn comment-btn">Post</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="forum-thread">
+          <h3>What's your favorite strategy in Game B?</h3>
+          <p>Posted by GamerGuy - Last comment: 5 hours ago</p>
+          <div class="comment-box">
+            <h4>Comments:</h4>
+            <div class="comment-list">
+              <p><strong>FastPlayer:</strong> I prefer using the sniper strategy!</p>
+            </div>
+            <div class="add-comment">
+              <input type="text" class="comment-input" placeholder="Add a comment...">
+              <button class="new-thread-btn comment-btn">Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <div id="new-thread-form">
+    <h3>Post a New Thread</h3>
+    <label for="thread-title">Thread Title:</label>
+    <input type="text" id="thread-title" placeholder="Enter thread title">
+    <br>
+    <label for="thread-content">Content:</label>
+    <textarea id="thread-content" placeholder="Enter thread content"></textarea>
+    <br>
+    <button class="new-thread-btn" onclick="postNewThread()">Post Thread</button>
+    <button class="new-thread-btn" onclick="closeNewThreadForm()">Cancel</button>
+  </div>
+
+  <script>
+    function showNewThreadForm() {
+      document.getElementById('new-thread-form').style.display = 'block';
+    }
+
+    function closeNewThreadForm() {
+      document.getElementById('new-thread-form').style.display = 'none';
+    }
+
+    function postNewThread() {
+      const title = document.getElementById('thread-title').value.trim();
+      const content = document.getElementById('thread-content').value.trim();
+
+      if (title && content) {
+        const threadContainer = document.getElementById('forum-threads');
+        const newThread = document.createElement('div');
+        newThread.classList.add('forum-thread');
+        newThread.innerHTML = `
+          <h3>${title}</h3>
+          <p>Posted by You - Last comment: Just now</p>
+          <div class="comment-box">
+            <h4>Comments:</h4>
+            <div class="comment-list">
+              <p><strong>You:</strong> ${content}</p>
+            </div>
+            <div class="add-comment">
+              <input type="text" class="comment-input" placeholder="Add a comment...">
+              <button class="new-thread-btn comment-btn">Post</button>
+            </div>
+          </div>
+        `;
+        threadContainer.prepend(newThread);
+        closeNewThreadForm();
+        document.getElementById('thread-title').value = '';
+        document.getElementById('thread-content').value = '';
+        setupCommentButtons(); // re-bind new comment button
+      } else {
+        alert("Please fill in both fields!");
+      }
+    }
+
+    function setupCommentButtons() {
+      const buttons = document.querySelectorAll('.comment-btn');
+      buttons.forEach(button => {
+        button.onclick = function () {
+          const input = this.previousElementSibling;
+          const commentText = input.value.trim();
+          if (commentText) {
+            const commentList = this.closest('.comment-box').querySelector('.comment-list');
+            const newComment = document.createElement('p');
+            newComment.innerHTML = `<strong>You:</strong> ${commentText}`;
+            commentList.appendChild(newComment);
+            input.value = '';
+            newComment.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            alert("Comment cannot be empty!");
+          }
+        };
+      });
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', setupCommentButtons);
+  </script>
+</body>
+</html>
