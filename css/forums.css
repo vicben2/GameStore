@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #181818;
+    color: #e5e5e5;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #171717;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #66c0f4;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+#forum-content {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #232323;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+h2,
+h3,
+h4 {
+    color: #fff;
+}
+
+#forum-threads {
+    margin-bottom: 20px;
+}
+
+.forum-thread {
+    background-color: #2c2c2c;
+    padding: 15px;
+    border: 1px solid #444;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.forum-thread h3 {
+    margin-top: 0;
+    color: #66c0f4;
+}
+
+.forum-thread p {
+    color: #bbb;
+}
+
+.new-thread-btn {
+    padding: 10px 20px;
+    background-color: #66c0f4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.new-thread-btn:hover {
+    background-color: #4fa3c7;
+}
+
+.comment-box {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #2c2c2c;
+    color: #bbb;
+}
+
+.add-comment {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+}
+
+.comment-btn {
+    flex-shrink: 0;
+}
+
+#new-thread-form {
+    display: none;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #232323;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #66c0f4;
+    box-shadow: 0 0 5px rgba(102, 192, 244, 0.6);
+}
