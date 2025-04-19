@@ -3,6 +3,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "express-csp-header": "^6.1.0",
     "mssql": "^11.0.1"
   },
   "name": "gamestore",

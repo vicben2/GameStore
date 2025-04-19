@@ -124,4 +124,18 @@ window.onload = () => {
   displayGameSuggestions();  // Call this to display the game suggestions on the library home page
   updateCart();
   updateLibrary();
+  disp()
 };
+
+
+async function disp() {
+  try {
+    const response = await fetch('/api/data');
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    console.log(JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    document.getElementById('dataOutput').textContent = 'Error fetching data';
+  }
+}
