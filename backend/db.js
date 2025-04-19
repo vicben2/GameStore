@@ -2,14 +2,15 @@ import sql from 'mssql'
 
 //db login
 const dbConfig = {
-    user: 'readwriteuser',
+    user: 'sa',
     password: 'admin1',
-    server: 'localhost\\SQLEXPRESS',
+    server: 'localhost',
     database: 'GAMESTOREDB',
     options: {
         trustedConnection: true,
         enableArithAbort: true,
-        trustServerCertificate: true
+        trustServerCertificate: true,
+        encrypt: false
     },
 }
 
