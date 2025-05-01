@@ -4,7 +4,7 @@ import { connect } from './db.js'
 
 
 const app = express();
-const port = 3333;
+const port = 8080;
 
 
 //Middleware
