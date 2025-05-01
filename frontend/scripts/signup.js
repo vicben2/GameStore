@@ -1,3 +1,16 @@
+const sql = require('mssql');
+const sqlConfig = {
+    user: 'your_username',
+    password: 'your_password',
+    server: 'localhost\\SQLEXPRESS',
+    database: 'GAMESTOREDB',
+    options: {
+        encrypt: false, //true if using Azure
+        trustServerCertificate: true //true for local dev / self-signed certs
+    }
+};
+
+
 function signup() {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;

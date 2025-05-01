@@ -1,0 +1,26 @@
+{
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-csp-header": "^6.1.0",
+    "mssql": "^11.0.1"
+  },
+  "name": "gamestore",
+  "description": "Group I DB project",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vicben2/GameStore.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vicben2/GameStore/issues"
+  },
+  "homepage": "https://github.com/vicben2/GameStore#readme"
+}
