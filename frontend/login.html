@@ -147,7 +147,20 @@
     </div>
 
     <script>
-        function login() {
+        const passwordInput = document.getElementById("password");
+        const togglePasswordButton = document.getElementById("togglePassword");
+        togglePasswordButton.addEventListener("click", function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                togglePasswordButton.textContent = "Hide";
+            } else {
+                passwordInput.type = "password";
+                togglePasswordButton.textContent = "Show";
+            }
+        });
+
+
+        async function login() {
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value;
             const rememberMe = document.getElementById("rememberMe").checked;
@@ -167,15 +180,18 @@
                 return;
             }
 
-            /*
             const users = JSON.parse(localStorage.getItem("users") || "[]");
-            const user = users.find(u => u.username === username && u.password === password);
-            */
+            const user = users.find(u => u.username === username);
 
+            sessionStorage.setItem("username", user.username);
+            sessionStorage.setItem("role", user.role); // Ensure role is set
+
+            /*
             if (!user) {
                 alert("Invalid username or password.");
                 return;
             }
+            */
 
             if (rememberMe) {
                 localStorage.setItem("rememberedUsername", user.username);
@@ -183,37 +199,42 @@
                 localStorage.removeItem("rememberedUsername");
             }
 
-            sessionStorage.setItem("username", user.username);
-            sessionStorage.setItem("role", user.role); // Ensure role is set
-
-            /*
-            if (user.role === "admin") {
-                window.location.href = "admin.html"; // Redirect to admin dashboard
-            } else if (user.role === "developer") {
-                window.location.href = "dashboard_dev.html"; // Redirect to developer dashboard
-            } else {
-                window.location.href = "dashboard.html"; // Redirect to user dashboard
+            const rememberedUsername = localStorage.getItem("rememberedUsername");
+            if (rememberedUsername) {
+                document.getElementById("username").value = rememberedUsername;
+                document.getElementById("rememberMe").checked = true;
             }
-            */
-        }
 
-        const passwordInput = document.getElementById("password");
-        const togglePasswordButton = document.getElementById("togglePassword");
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
 
-        togglePasswordButton.addEventListener("click", function () {
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                togglePasswordButton.textContent = "Hide";
-            } else {
-                passwordInput.type = "password";
-                togglePasswordButton.textContent = "Show";
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    sessionStorage.setItem("currentUserId", result.userID)
+                    if (result.user_type === "ADMIN") {
+                        window.location.href = "admin.html"; // Redirect to admin dashboard
+                    } else if (result.user_type === "DEV") {
+                        window.location.href = "dashboard_dev.html"; // Redirect to developer dashboard
+                    } else {
+                        window.location.href = "dashboard.html"; // Redirect to user dashboard
+                    }
+                } else {
+                    alert(result.message);
+                    console.error('Fetch: POST failed:', result.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
             }
-        });
-
-        const rememberedUsername = localStorage.getItem("rememberedUsername");
-        if (rememberedUsername) {
-            document.getElementById("username").value = rememberedUsername;
-            document.getElementById("rememberMe").checked = true;
         }
     </script>
 </body>

@@ -39,7 +39,7 @@ app.get('/api/games', async (req, res) => {
     }
 });
 
-//get game-genres
+//get game-genres - 50 games
 app.get('/api/games_genres', async (req, res) => {
     try {
         const pool = await connect()
@@ -74,6 +74,36 @@ app.post('/api/signup', async (req, res) => {
                     await request.execute('SP_SIGNUP_USER')
                     .then(result => {
                         res.send({success: true})
+                    })
+                }
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//login
+app.post('/api/login', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { username, password } = req.body
+
+        const request = pool.request()
+        request.input('USERNAME', sql.VarChar(30), username)
+        request.input('PASSWORD', sql.VarChar(50), password)
+
+        await request.execute('SP_LOGIN_USER')
+        .then(async (result) => {
+                if(result.recordset.length === 0) {
+                    res.send({success: false, message: "Invalid username/password"})
+                }
+                else {
+                    await request.execute('SP_LOGIN_USER')
+                    .then(result => {
+                        res.send({success: true, userID: result.recordset[0].USER_ID, user_type: result.recordset[0].USER_TYPE})
                     })
                 }
         })
