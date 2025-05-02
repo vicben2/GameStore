@@ -39,14 +39,14 @@
   </div>
 
   <script>
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (!currentUser || currentUser.role !== "developer") {
+    const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+    if (!currentUser || currentUser.USER_TYPE !== "developer") {
       alert("Access denied.");
       window.location.href = "login.html";
     }
 
     function logout() {
-      localStorage.removeItem("currentUser");
+      sessionStorage.removeItem("currentUser");
       window.location.href = "login.html";
     }
   </script>

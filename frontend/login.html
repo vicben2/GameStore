@@ -180,12 +180,13 @@
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem("users") || "[]");
+            const users = JSON.parse(sessionStorage.getItem("users") || "[]");
             const user = users.find(u => u.username === username);
 
-            sessionStorage.setItem("username", user.username);
-            sessionStorage.setItem("role", user.role); // Ensure role is set
-
+            if(user) {
+                sessionStorage.setItem("username", user.username);
+                sessionStorage.setItem("role", user.role); // Ensure role is set
+            }
             /*
             if (!user) {
                 alert("Invalid username or password.");
@@ -194,12 +195,12 @@
             */
 
             if (rememberMe) {
-                localStorage.setItem("rememberedUsername", user.username);
+                sessionStorage.setItem("rememberedUsername", user.username);
             } else {
-                localStorage.removeItem("rememberedUsername");
+                sessionStorage.removeItem("rememberedUsername");
             }
 
-            const rememberedUsername = localStorage.getItem("rememberedUsername");
+            const rememberedUsername = sessionStorage.getItem("rememberedUsername");
             if (rememberedUsername) {
                 document.getElementById("username").value = rememberedUsername;
                 document.getElementById("rememberMe").checked = true;
@@ -219,18 +220,18 @@
                 }
 
                 const result = await response.json();
+                console.log(result)
                 if (result.success) {
-                    sessionStorage.setItem("currentUserId", result.userID)
-                    if (result.user_type === "ADMIN") {
+                    sessionStorage.setItem("currentUser", JSON.stringify(result.user))
+                    if (result.user.USER_TYPE === "ADMIN") {
                         window.location.href = "admin.html"; // Redirect to admin dashboard
-                    } else if (result.user_type === "DEV") {
+                    } else if (result.user.USER_TYPE === "DEV") {
                         window.location.href = "dashboard_dev.html"; // Redirect to developer dashboard
                     } else {
                         window.location.href = "dashboard.html"; // Redirect to user dashboard
                     }
                 } else {
                     alert(result.message);
-                    console.error('Fetch: POST failed:', result.message);
                 }
             } catch (error) {
                 console.error('Fetch error:', error)

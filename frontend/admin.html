@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
@@ -17,7 +18,7 @@
       background-color: #1f1f1f;
       padding: 20px;
       text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
     header h1 {
@@ -86,6 +87,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>Admin Dashboard</h1>
@@ -96,7 +98,7 @@
     <a href="manage-users.html">Manage Users</a>
     <a href="reports.html">Reports</a>
     <a href="settings.html">Settings</a>
-    <a href="logout.html">Logout</a>
+    <a id="logoutLink" href="logout.html">Logout</a>
   </nav>
 
   <div class="content">
@@ -121,5 +123,14 @@
   <footer>
     &copy; 2025 Game Store Admin Panel. All rights reserved.
   </footer>
+
+  <script>
+    const logoutLink = document.getElementById("logoutLink")
+    logoutLink.addEventListener("click", function() {
+      sessionStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    })
+  </script>
 </body>
+
 </html>

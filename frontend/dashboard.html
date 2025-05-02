@@ -399,7 +399,7 @@
   </div>
 
   <script>
-    const username = sessionStorage.getItem("username") || "Guest";
+    const username = (JSON.parse(sessionStorage.getItem("currentUser"))).USERNAME || "Guest";
     document.getElementById("username").textContent = username;
     const isLoggedIn = username !== "Guest";
 
@@ -417,9 +417,9 @@
     */
    
     //let games = []
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let purchased = JSON.parse(localStorage.getItem("purchased")) || [];
-    let downloaded = JSON.parse(localStorage.getItem("downloaded")) || [];
+    let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+    let purchased = JSON.parse(sessionStorage.getItem("purchased")) || [];
+    let downloaded = JSON.parse(sessionStorage.getItem("downloaded")) || [];
 
     async function displayGames(filteredGames = games) {
       //console.log(filteredGames)
@@ -442,13 +442,13 @@
     function addToCart(index) {
       if (!isLoggedIn) return window.location.href = "login.html";
       cart.push(games[index]);
-      localStorage.setItem("cart", JSON.stringify(cart));
+      sessionStorage.setItem("cart", JSON.stringify(cart));
       updateCart();
     }
 
     function removeFromCart(index) {
       cart.splice(index, 1);
-      localStorage.setItem("cart", JSON.stringify(cart));
+      sessionStorage.setItem("cart", JSON.stringify(cart));
       updateCart();
     }
 
@@ -477,9 +477,9 @@
         }
       });
       cart = [];
-      localStorage.setItem("purchased", JSON.stringify(purchased));
-      localStorage.setItem("downloaded", JSON.stringify(downloaded));
-      localStorage.setItem("cart", JSON.stringify(cart));
+      sessionStorage.setItem("purchased", JSON.stringify(purchased));
+      sessionStorage.setItem("downloaded", JSON.stringify(downloaded));
+      sessionStorage.setItem("cart", JSON.stringify(cart));
       updateCart();
       updateLibrary();
       alert("✅ Thank you for your purchase!");
@@ -523,7 +523,7 @@
     function removeFromCollection(title) {
       // Remove game from purchased list by filtering
       purchased = purchased.filter(game => game.title !== title);
-      localStorage.setItem("purchased", JSON.stringify(purchased));
+      sessionStorage.setItem("purchased", JSON.stringify(purchased));
       updateLibrary();
     }
 
@@ -544,7 +544,7 @@
     }
 
     function logout() {
-      sessionStorage.clear();
+      sessionStorage.removeItem("currentUser");
       window.location.href = "login.html";
     }
 

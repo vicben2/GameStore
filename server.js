@@ -103,7 +103,7 @@ app.post('/api/login', async (req, res) => {
                 else {
                     await request.execute('SP_LOGIN_USER')
                     .then(result => {
-                        res.send({success: true, userID: result.recordset[0].USER_ID, user_type: result.recordset[0].USER_TYPE})
+                        res.send({success: true, user: result.recordset[0]})
                     })
                 }
         })

@@ -89,22 +89,10 @@
           window.location.href = "login.html"; // Redirect to login page after sign-up
         } else {
           alert(result.message);
-          console.error('Fetch: POST failed:', result.message);
         }
       } catch (error) {
         console.error('Fetch error:', error)
       }
-
-      //const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-      /*
-      if (users.some(u => u.username === username)) {
-        return;
-      }
-      */
-
-      //users.push({ username, password, role });
-      //localStorage.setItem("users", JSON.stringify(users));
     }
   </script>
 </body>
