@@ -120,22 +120,44 @@ function displayGameSuggestions() {
   });
 }
 window.onload = () => {
+  fetch('/api/games')
+    .then(response => {
+      console.log(response)
+    })
+    .then(data => {
+      console.log(data)
+    })
+    .catch(error => {
+      console.error('Error fetching data: ' + error.message)
+    });
+  fetchGamesFromDB();
   displayGames();
   displayGameSuggestions();  // Call this to display the game suggestions on the library home page
   updateCart();
   updateLibrary();
-  disp()
 };
 
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', function (event) {
+    event.preventDefault(); // Stop real link navigation
+    const page = this.getAttribute('href');
+    alert('You clicked on ' + page + '. Page will be available soon.');
+  })
+})
 
-async function disp() {
-  try {
-    const response = await fetch('/api/data');
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    console.log(JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    document.getElementById('dataOutput').textContent = 'Error fetching data';
-  }
+function fetchGamesFromDB() {
+  fetch('/api/games')
+    .then(response => {
+      console.log(response)
+      if (!response.ok) {
+        throw new Error('Network response was not ok: ' + response.statusText);
+      }
+      console.log(response.json())
+    })
+    .then(data => {
+      console.log(data)
+    })
+    .catch(error => {
+      console.error('Error fetching data: ' + error.message)
+    });
 }

@@ -4,8 +4,45 @@
 <head>
   <meta charset="UTF-8" />
   <title>Sign Up</title>
-  <script src="./scripts/signup.js" defer></script>
-  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1c1c1c;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .signup-box {
+      background: #2b2b2b;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      width: 300px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #27ae60;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,10 +53,48 @@
     <select id="role">
       <option value="user">User</option>
       <option value="developer">Developer</option>
+      <!-- <option value="admin">Admin</option> -->
     </select>
     <button onclick="signup()">Sign Up</button>
     <p>Already have an account? <a href="login.html" style="color: #f1c40f;">Login</a></p>
   </div>
+
+  <script>
+    async function signup() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+
+      if (!username || !password) {
+        alert("Please enter all fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, user_type: role })
+        })
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Account created successfully!");
+          window.location.href = "login.html"; // Redirect to login page after sign-up
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
+    }
+  </script>
 </body>
 
 </html>
