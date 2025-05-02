@@ -3,7 +3,7 @@ import mssql from 'mssql'
 //db login
 const dbConfig = {
     user: 'sa',
-    password: 'm3m3c3nt3r',
+    password: 'admin1',
     server: 'localhost',
     database: 'GAMESTOREDB',
     options: {

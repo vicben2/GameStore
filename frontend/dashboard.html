@@ -422,7 +422,7 @@
     let downloaded = JSON.parse(localStorage.getItem("downloaded")) || [];
 
     async function displayGames(filteredGames = games) {
-      console.log(filteredGames)
+      //console.log(filteredGames)
       const gameList = document.getElementById("gameList");
       gameList.innerHTML = "";
       filteredGames.forEach((game, i) => {
@@ -606,8 +606,8 @@
         data1.forEach(game => {
           game["GENRES"] = data2.filter(game_genre => game.GAME_TITLE === game_genre.GAME_TITLE)[0].GENRES
         });
-
         return data1
+      
       } catch (error) {
         console.error('Fetch error:', error);
       }

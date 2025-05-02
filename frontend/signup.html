@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Sign Up</title>
@@ -13,6 +14,7 @@
       align-items: center;
       height: 100vh;
     }
+
     .signup-box {
       background: #2b2b2b;
       padding: 30px;
@@ -20,13 +22,16 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
       width: 300px;
     }
-    input, select {
+
+    input,
+    select {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       border: none;
       border-radius: 6px;
     }
+
     button {
       width: 100%;
       padding: 10px;
@@ -39,6 +44,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="signup-box">
     <h2>Sign Up</h2>
@@ -47,14 +53,14 @@
     <select id="role">
       <option value="user">User</option>
       <option value="developer">Developer</option>
-      <option value="admin">Admin</option>
+      <!-- <option value="admin">Admin</option> -->
     </select>
     <button onclick="signup()">Sign Up</button>
     <p>Already have an account? <a href="login.html" style="color: #f1c40f;">Login</a></p>
   </div>
 
   <script>
-    function signup() {
+    async function signup() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
@@ -64,19 +70,43 @@
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, user_type: role })
+        })
 
-      if (users.some(u => u.username === username)) {
-        alert("Username already exists.");
-        return;
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Account created successfully!");
+          window.location.href = "login.html"; // Redirect to login page after sign-up
+        } else {
+          alert(result.message);
+          console.error('Fetch: POST failed:', result.message);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
       }
 
-      users.push({ username, password, role });
-      localStorage.setItem("users", JSON.stringify(users));
+      //const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-      alert("Account created successfully!");
-      window.location.href = "login.html"; // Redirect to login page after sign-up
+      /*
+      if (users.some(u => u.username === username)) {
+        return;
+      }
+      */
+
+      //users.push({ username, password, role });
+      //localStorage.setItem("users", JSON.stringify(users));
     }
   </script>
 </body>
+
 </html>
