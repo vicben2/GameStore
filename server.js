@@ -4,7 +4,7 @@ import { connect, sql } from './db.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { resourceUsage } from 'process';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,6 +133,28 @@ app.post('/api/upload_game', async (req, res) => {
     }
 });
 
+//get entity count
+app.get('/api/get_count', async (req, res) => {
+    try {
+        const { entity } = req.query
+        let query = ""
+
+        switch(entity) {
+            case "users": query = "SP_GET_ALL_USERS_COUNT"; break
+            case "devs": query = "SP_GET_DEV_COUNT"; break
+            case "games": query = "SP_GET_ALL_GAMES_COUNT"; break
+            default: res.send({success: false, message: "Invalid entity."})
+        }
+
+        const pool = await connect()
+        const result = await pool.request().query(`EXEC ${query}`)
+        res.send({success: true, data: result.recordset});
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
 
 //listener
 app.listen(port, () => {

@@ -112,9 +112,9 @@
     <div class="section">
       <h2>System Overview</h2>
       <ul>
-        <li>Total Users: 128</li>
-        <li>Active Developers: 17</li>
-        <li>Games Listed: 243</li>
+        <li>Total Users: <span id="usersCount"></span></li>
+        <li>Active Developers: <span id="devCount"></span></li>
+        <li>Games Listed: <span id="gamesCount"></span></li>
         <li>Pending Reports: 5</li>
       </ul>
     </div>
@@ -126,9 +126,40 @@
 
   <script>
     const logoutLink = document.getElementById("logoutLink")
-    logoutLink.addEventListener("click", function() {
+    logoutLink.addEventListener("click", function () {
       sessionStorage.removeItem("currentUser");
       window.location.href = "login.html";
+    })
+
+    window.addEventListener("load", async function () {
+      try {
+        const [responseUsers, responseDevs, responseGames] = await Promise.all([
+          fetch('api/get_count?entity=users'),
+          fetch('api/get_count?entity=devs'),
+          fetch('api/get_count?entity=games')
+        ]);
+
+        if (!responseUsers.ok || !responseDevs.ok || !responseGames.ok) {
+          throw new Error('One of the network responses was not ok');
+        }
+
+        const [usersCount, devsCount, gamesCount] = await Promise.all([
+          responseUsers.json(),
+          responseDevs.json(),
+          responseGames.json()
+        ])
+
+        const usersCountElem = document.getElementById("usersCount")
+        const devCountElem = document.getElementById("devCount")
+        const gamesCountElem = document.getElementById("gamesCount")
+
+        usersCountElem.innerText = usersCount.data[0].USERS_COUNT
+        devCountElem.innerText = devsCount.data[0].DEV_COUNT
+        gamesCountElem.innerText = gamesCount.data[0].GAMES_COUNT
+
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
     })
   </script>
 </body>
