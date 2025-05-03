@@ -40,7 +40,7 @@
 
   <script>
     const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-    if (!currentUser || currentUser.USER_TYPE !== "developer") {
+    if (!currentUser || currentUser.USER_TYPE !== "DEV") {
       alert("Access denied.");
       window.location.href = "login.html";
     }

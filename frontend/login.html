@@ -220,7 +220,6 @@
                 }
 
                 const result = await response.json();
-                console.log(result)
                 if (result.success) {
                     sessionStorage.setItem("currentUser", JSON.stringify(result.user))
                     if (result.user.USER_TYPE === "ADMIN") {
