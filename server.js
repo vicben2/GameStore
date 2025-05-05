@@ -4,7 +4,7 @@ import { connect, sql } from './db.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { resourceUsage } from 'process';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,19 +63,17 @@ app.post('/api/signup', async (req, res) => {
         const request = pool.request()
         request.input('USERNAME', sql.VarChar(30), username);
 
-        await request.execute('SP_GET_USERS_BY_USERNAME')
-        .then(async (result) => {
-                if(result.recordset.length !== 0) {
-                    res.send({success: false, message: "Username already exists."})
-                }
-                else {
-                    request.input('PASSWORD', sql.VarChar(50), password)
-                    request.input('USER_TYPE', sql.VarChar(100), user_type)
-                    await request.execute('SP_SIGNUP_USER')
-                    .then(result => {
-                        res.send({success: true})
-                    })
-                }
+        await request.execute('SP_GET_USERS_BY_USERNAME').then(async (result) => {
+            if (result.recordset.length !== 0) {
+                res.send({ success: false, message: "Username already exists." })
+            }
+            else {
+                request.input('PASSWORD', sql.VarChar(50), password)
+                request.input('USER_TYPE', sql.VarChar(100), user_type)
+                await request.execute('SP_SIGNUP_USER').then(result => {
+                    res.send({ success: true })
+                })
+            }
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -95,17 +93,15 @@ app.post('/api/login', async (req, res) => {
         request.input('USERNAME', sql.VarChar(30), username)
         request.input('PASSWORD', sql.VarChar(50), password)
 
-        await request.execute('SP_LOGIN_USER')
-        .then(async (result) => {
-                if(result.recordset.length === 0) {
-                    res.send({success: false, message: "Invalid username/password"})
-                }
-                else {
-                    await request.execute('SP_LOGIN_USER')
-                    .then(result => {
-                        res.send({success: true, user: result.recordset[0]})
-                    })
-                }
+        await request.execute('SP_LOGIN_USER').then(async (result) => {
+            if (result.recordset.length === 0) {
+                res.send({ success: false, message: "Invalid username/password" })
+            }
+            else {
+                await request.execute('SP_LOGIN_USER').then(result => {
+                    res.send({ success: true, user: result.recordset[0] })
+                })
+            }
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -114,6 +110,51 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+//add game
+app.post('/api/upload_game', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { gameName, gameDesc, devId } = req.body
+
+        const request = pool.request()
+        request.input('DEV_ID', sql.Int, devId)
+        request.input('GAME_TITLE', sql.VarChar(50), gameName)
+        request.input('GAME_DESC', sql.VarChar(300), gameDesc)
+        request.input('PRICE', sql.Money, 400) //default to 400 money for now, edit later
+
+        await request.execute('SP_ADD_GAME').then(async (result) => {
+            res.send({success: true, message: "Game added."})
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//get entity count
+app.get('/api/get_count', async (req, res) => {
+    try {
+        const { entity } = req.query
+        let query = ""
+
+        switch(entity) {
+            case "users": query = "SP_GET_ALL_USERS_COUNT"; break
+            case "devs": query = "SP_GET_DEV_COUNT"; break
+            case "games": query = "SP_GET_ALL_GAMES_COUNT"; break
+            default: res.send({success: false, message: "Invalid entity."})
+        }
+
+        const pool = await connect()
+        const result = await pool.request().query(`EXEC ${query}`)
+        res.send({success: true, data: result.recordset});
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
 
 //listener
 app.listen(port, () => {

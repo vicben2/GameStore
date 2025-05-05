@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -157,6 +158,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Developer Dashboard</h1>
@@ -169,14 +171,16 @@
     <div class="content">
         <h2>Upload a New Game</h2>
         <p>Use the form below to upload your game and a preview image.</p>
-        <form action="/upload_game" method="POST" enctype="multipart/form-data">
+        <!-- <form action="/upload_game" method="POST" enctype="multipart/form-data"> -->
+        <form id="gameSubmitForm">
             <div class="form-group">
                 <label for="game-name">Game Name</label>
                 <input type="text" id="game-name" name="game_name" placeholder="Enter your game's name" required>
             </div>
             <div class="form-group">
                 <label for="game-description">Game Description</label>
-                <textarea id="game-description" name="game_description" rows="4" placeholder="Describe your game" required></textarea>
+                <textarea id="game-description" name="game_description" rows="4" placeholder="Describe your game"
+                    required></textarea>
             </div>
             <div class="form-group">
                 <label for="game-file">Game File</label>
@@ -194,5 +198,46 @@
     <footer>
         <p>&copy; 2025 Your Game Store. All rights reserved.</p>
     </footer>
+    <script>
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+
+        if (!currentUser || currentUser.USER_TYPE !== "DEV") {
+            alert("Access denied.");
+            window.location.href = "dashboard.html";
+        }
+
+        const gameSubmitForm = document.getElementById("gameSubmitForm")
+        gameSubmitForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const gameName = document.getElementById('game-name').value
+            const gameDesc = document.getElementById("game-description").value
+
+            try {
+                const response = await fetch('/api/upload_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameName, gameDesc, devId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message)
+                    window.location.href = "dashboard_dev.html"
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+        })
+    </script>
 </body>
+
 </html>

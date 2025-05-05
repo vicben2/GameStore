@@ -415,8 +415,8 @@
       { title: "Pirate's Treasure", genre: "Adventure", price: 29.99, img: "https://via.placeholder.com/250x140?text=Pirate's+Treasure" }
     ];
     */
-   
-    //let games = []
+
+    let games = []
     let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
     let purchased = JSON.parse(sessionStorage.getItem("purchased")) || [];
     let downloaded = JSON.parse(sessionStorage.getItem("downloaded")) || [];
@@ -578,7 +578,7 @@
     });
 
     window.onload = async () => {
-      let games = await fetchGamesFromDB()
+      games = await fetchGamesFromDB()
       displayGames(games);
       updateCart();
       updateLibrary();
@@ -604,10 +604,10 @@
         ]);
 
         data1.forEach(game => {
-          game["GENRES"] = data2.filter(game_genre => game.GAME_TITLE === game_genre.GAME_TITLE)[0].GENRES
+          const genres = data2.filter(game_genre => game.GAME_TITLE === game_genre.GAME_TITLE)
+          game["GENRES"] = genres.length > 0 ? genres[0].GENRES : ["None"]
         });
         return data1
-      
       } catch (error) {
         console.error('Fetch error:', error);
       }
