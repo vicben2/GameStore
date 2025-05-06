@@ -332,6 +332,26 @@ app.post('/api/user_games', async (req, res) => {
     }
 });
 
+//disable game
+app.post('/api/toggle_game', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { gameId } = req.body
+
+        const request = pool.request()
+        request.input('GAME_ID', sql.Int, gameId)
+
+        await request.execute('SP_TOGGLE_DISABLE_GAME').then(async (result) => {
+            res.send({success: true, message: "Game availability has been toggled." })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 
 //listener
 app.listen(port, () => {
