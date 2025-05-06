@@ -103,7 +103,7 @@
 
   <div class="content">
     <div class="section">
-      <h2>Welcome, Admin</h2>
+      <h2 id="adminName">Welcome, Admin</h2>
       <p>Use this panel to manage users, review system activity, and maintain the game store platform.</p>
       <button class="btn" onclick="location.href='manage-users.html'">Manage Users</button>
       <button class="btn" onclick="location.href='reports.html'">View Reports</button>
@@ -127,11 +127,20 @@
   <script>
     const logoutLink = document.getElementById("logoutLink")
     logoutLink.addEventListener("click", function () {
-      sessionStorage.removeItem("currentUser");
+      sessionStorage.clear()
       window.location.href = "login.html";
     })
 
     window.addEventListener("load", async function () {
+      const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const adminNameElem = document.getElementById("adminName")
+      adminNameElem.innerText = "Welcome, Admin " + currentUser.USERNAME
+
       try {
         const [responseUsers, responseDevs, responseGames] = await Promise.all([
           fetch('api/get_count?entity=users'),

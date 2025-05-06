@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #23232b 0%, #23232b 60%, #2d2d3a 100%);
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+
+        .dialog-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #23232b;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+            min-width: 340px;
+            max-width: 420px;
+            width: 90vw;
+            min-height: 420px;
+            max-height: 90vh;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            animation: fadeInDialog 0.4s cubic-bezier(.4, 2, .6, 1);
+            padding: 32px 28px 24px 28px;
+            overflow: auto;
+        }
+
+        @keyframes fadeInDialog {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        h2 {
+            color: #ffa726;
+            margin-bottom: 22px;
+            text-align: center;
+            font-size: 2em;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            width: 100%;
+        }
+
+        .form-group label {
+            font-size: 1.08em;
+            color: #f39c12;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 13px 12px;
+            font-size: 1em;
+            background-color: #29293a;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 8px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #ffa726;
+            box-shadow: 0 0 0 2px #ffa72633;
+            outline: none;
+        }
+
+        .form-group input[type="file"] {
+            padding: 8px;
+            background: none;
+        }
+
+        .form-group button {
+            padding: 13px 0;
+            font-size: 1.13em;
+            background: linear-gradient(90deg, #ffa726 60%, #f39c12 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 2px 8px #0002;
+        }
+
+        .form-group button:hover {
+            background: linear-gradient(90deg, #f39c12 60%, #ffa726 100%);
+            transform: scale(1.04);
+        }
+
+        .game-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .game-preview img {
+            max-width: 220px;
+            max-height: 160px;
+            border-radius: 10px;
+            border: 2px solid #ffa726;
+            box-shadow: 0 2px 12px #000a;
+            transition: box-shadow 0.3s, transform 0.2s;
+        }
+
+        .game-preview img:hover {
+            box-shadow: 0 4px 24px #ffa72655;
+            transform: scale(1.03);
+        }
+
+        .back-link {
+            display: block;
+            margin: 22px auto 0 auto;
+            color: #ffa726;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1.13em;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #fff3e0;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .dialog-container {
+                min-width: 0;
+                width: 98vw;
+                max-width: 98vw;
+                min-height: 0;
+                max-height: 98vh;
+                padding: 12px 2vw;
+            }
+
+            h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+    <div class="dialog-container">
+        <h2>Update Game</h2>
+        <form id="updateGameForm">
+            <div class="form-group">
+                <label for="game-name">Game Name</label>
+                <input type="text" id="game-name" name="game_name" required>
+            </div>
+            <div class="form-group">
+                <label for="game-description">Game Description</label>
+                <textarea id="game-description" name="game_description" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="game-genre">Game Genre</label>
+                <select id="game-genre" name="game_genre" required>
+                    <option value="">Select a genre</option>
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Puzzle">Puzzle</option>
+                    <option value="RPG">RPG</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Simulation">Simulation</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Racing">Racing</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="game-price">Price ($)</label>
+                <input type="number" id="game-price" name="game_price" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="game-image">Game Image (e.g., screenshot)</label>
+                <input type="file" id="game-image" name="game_image" accept="image/*">
+                <div class="game-preview">
+                    <img id="previewImage" src="" alt="Game Preview" style="display: none;">
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit">Update Game</button>
+            </div>
+        </form>
+        <a href="dashboard_dev.html" class="back-link">&larr; Back to Dashboard</a>
+    </div>
+    <script>
+        // Load game data to edit
+        const gameId = JSON.parse(sessionStorage.getItem('editGameIndex'))
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+        //const games = JSON.parse(sessionStorage.getItem('developerGames') || '[]');
+
+        window.addEventListener("load", async function () {
+            //init genres
+            try {
+                const response = await fetch('/api/genres')
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                await response.json().then(result => {
+                    const genreSelectElem = document.getElementById("game-genre")
+                    genreSelectElem.innerHTML = '<option value="" disable>Select a genre</option>'
+                    result.forEach(genre => {
+                        genreSelectElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
+                    });
+                })
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            //load game info
+            let game
+            try {
+                const response = await fetch('/api/dev_games', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ devId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    game = result.data.filter(gameObj => gameObj.GAME_ID === gameId)[0]
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            if (gameId === null) {
+                alert('No game selected for editing.');
+                window.location.href = 'dashboard_dev.html';
+            }
+
+            document.getElementById('game-name').value = game.GAME_TITLE || '';
+            document.getElementById('game-description').value = game.GAME_DESC || '';
+            document.getElementById('game-price').value = game.PRICE || '';
+            if (game.GAME_IMG) {
+                document.getElementById('previewImage').src = game.GAME_IMG;
+                document.getElementById('previewImage').style.display = 'block';
+            }
+
+            try {
+                const response = await fetch('/api/genres_by_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameId })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('game-genre').value = result.data[0].GENRE || ''
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+        })
+
+        // Image preview
+        document.getElementById('game-image').addEventListener('change', function (e) {
+            const preview = document.getElementById('previewImage');
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('updateGameForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            // Update game object
+            const title = document.getElementById('game-name').value;
+            const description = document.getElementById('game-description').value;
+            const genre = document.getElementById('game-genre').value;
+            const price = parseFloat(document.getElementById('game-price').value);
+            
+            const imgFile = document.getElementById("game-image").files[0]
+
+            const formData = new FormData();
+            formData.append('picture', imgFile);
+            let img
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!response.ok) {
+                    throw new Error("Network response was not ok.");
+                }
+                const result = await response.json();
+                img = result.path
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+            /*
+            games[editIndex] = game;
+            sessionStorage.setItem('developerGames', JSON.stringify(games));
+            sessionStorage.removeItem('editGameIndex');
+            alert('Game updated successfully!');
+            */
+            try {
+                const response = await fetch('/api/update_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameId, title, description, genre, price, img })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message)
+                    window.location.href = 'dashboard_dev.html'
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+        });
+    </script>
+</body>
+
+</html>
