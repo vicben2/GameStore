@@ -251,7 +251,7 @@
             const email = document.getElementById("email").value.trim();
             let birthdate = document.getElementById("birthdate").value;
             const bio = document.getElementById("bio").value.trim();
-            const profilePicFile = document.getElementById("profilePic").files[0];
+            const profilePic = document.getElementById("profilePic").files[0];
 
             // Clear previous error messages
             document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
@@ -292,7 +292,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio })
+                    body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio, profilePic })
                 })
 
                 if (!response.ok) {

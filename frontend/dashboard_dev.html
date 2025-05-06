@@ -240,6 +240,97 @@
             font-size: 1.2em;
             color: #f39c12;
         }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #1e1e2f;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.8);
+        }
+
+        #game-list {
+            overflow-y: auto;
+            border-bottom: 1px solid #333;
+            max-height: 250px;
+        }
+
+        .game-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a2a40;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .game-item:hover {
+            background-color: #31314b;
+        }
+
+        .game-item.selected {
+            background-color: #4b51a5;
+        }
+
+        .game-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #c6c6ff;
+        }
+
+        .game-genre-price {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        #edit-form {
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            color: #9aa7ff;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.8px solid #44475a;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #222233;
+            color: #eee;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #7d88ff;
+            background-color: #33334d;
+        }
+
+        ::placeholder {
+            color: #888abb;
+        }
+
+        #no-selection {
+            text-align: center;
+            color: #777a9c;
+            font-style: italic;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -274,6 +365,7 @@
                     <label for="game-genre">Game Genre</label>
                     <select id="game-genre" name="game_genre" required
                         style="background-color: #333; color: #fff; border: 2px solid #444; border-radius: 8px; padding: 14px; font-size: 1em;">
+                        <!--
                         <option value="">Select a genre</option>
                         <option value="Action">Action</option>
                         <option value="Adventure">Adventure</option>
@@ -285,6 +377,7 @@
                         <option value="Racing">Racing</option>
                         <option value="Horror">Horror</option>
                         <option value="Other">Other</option>
+                        -->
                     </select>
                 </div>
                 <div class="form-group">
@@ -323,10 +416,32 @@
 
         <div id="gamesSection" style="display: none;">
             <h2>My Games</h2>
-            <div class="games-list" id="gamesList">
+            <div id="game-list" role="list" aria-label="List of games">
                 <!-- Games will be listed here -->
             </div>
+            <form id="edit-form" aria-label="Edit selected game" style="display:none;">
+                <div>
+                    <label for="titleInput">Title</label>
+                    <input type="text" id="titleInput" name="title" required />
+                </div>
+                <div>
+                    <label for="descInput">Description</label>
+                    <input type="text" id="descInput" name="description" required />
+                </div>
+                <div>
+                    <label for="genreSelect">Genre</label>
+                    <select id="genreSelect" name="genre" required>
+                    </select>
+                </div>
+                <div>
+                    <label for="priceInput">Price ($)</label>
+                    <input type="number" id="priceInput" name="price" min="0" step="0.01" required />
+                </div>
+                <input style="font-size: 1.5em;" id="updateGameBtn" type="button" value="Update game">
+            </form>
+            <div id="no-selection">Select a game to edit its details</div>
         </div>
+
 
         <div id="profileSection" style="display: none;">
             <h2>Developer Profile</h2>
@@ -387,10 +502,10 @@
         const gameSubmitForm = document.getElementById("gameSubmitForm")
         gameSubmitForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-
+ 
             const gameName = document.getElementById('game-name').value
             const gameDesc = document.getElementById("game-description").value
-
+ 
             try {
                 const response = await fetch('/api/upload_game', {
                     method: 'POST',
@@ -399,11 +514,11 @@
                     },
                     body: JSON.stringify({ gameName, gameDesc, devId: currentUser.USER_ID })
                 })
-
+ 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
+ 
                 const result = await response.json();
                 if (result.success) {
                     alert(result.message)
@@ -469,6 +584,52 @@
         document.getElementById('uploadGameForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+
+            const gameName = document.getElementById('game-name').value
+            const gameDesc = document.getElementById('game-description').value
+            const genre = document.getElementById('game-genre').value
+            const price = parseFloat(document.getElementById('game-price').value)
+            const image = ""
+            //const image = document.getElementById('previewImage').src
+            //    fileName: gameFile ? gameFile.name : '',
+            //    fileData: gameFileData
+
+            try {
+                const response = await fetch('/api/upload_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameName, gameDesc, genre, devId: currentUser.USER_ID, price, image })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message)
+
+                    // Clear form
+                    this.reset();
+                    document.getElementById('previewImage').style.display = 'none';
+                    document.getElementById('gameFileName').textContent = '';
+
+                    // Show success message and switch to games list
+                    //alert('Game uploaded successfully!');
+                    showSection('gamesSection');
+                    loadGames();
+
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            /*
             const gameFileInput = document.getElementById('game-file');
             const gameFile = gameFileInput.files[0];
             let gameFileData = '';
@@ -490,27 +651,52 @@
                 fileName: gameFile ? gameFile.name : '',
                 fileData: gameFileData
             };
-
+            
+ 
             // Save game to localStorage
             const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
             games.push(game);
             localStorage.setItem('developerGames', JSON.stringify(games));
-
+ 
             // Clear form
             this.reset();
             document.getElementById('previewImage').style.display = 'none';
             document.getElementById('gameFileName').textContent = '';
-
+ 
             // Show success message and switch to games list
             alert('Game uploaded successfully!');
             showSection('gamesSection');
             loadGames();
+            */
         });
 
-        // Show upload section by default
-        window.onload = function () {
-            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        //init
+        window.addEventListener("load", async function () {
+            //init genre options
+            try {
+                const response = await fetch('/api/genres')
 
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                await response.json().then(result => {
+                    const gameGenreOptionsElem = document.getElementById("game-genre")
+                    const genreSelectElem = document.getElementById("genreSelect")
+                    gameGenreOptionsElem.innerHTML = '<option value="" disable>Select a genre</option>'
+                    genreSelectElem.innerHTML = '<option value="" disable>Select a genre</option>'
+
+                    result.forEach(genre => {
+                        gameGenreOptionsElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
+                        genreSelectElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
+                    });
+                })
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+
+            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
             if (!currentUser || currentUser.USER_TYPE !== "DEV") {
                 alert("Access denied.");
                 window.location.href = "dashboard.html";
@@ -518,28 +704,196 @@
 
             showSection('uploadSection');
             loadProfile();
-            //const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+
+            //display dev name
             let devName = 'Developer';
             if (currentUser.FNAME || currentUser.LNAME) {
                 devName = (currentUser.FNAME || '') + (currentUser.LNAME ? ' ' + currentUser.LNAME : '');
             } else if (currentUser.USERNAME) {
                 devName = currentUser.USERNAME;
             }
+            //const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
             /*
             else if (currentUser.username) {
                 devName = currentUser.username;
             }
             */
             document.getElementById('headerDevName').textContent = devName.trim() + ' Developer';
+        })
+
+        // Show upload section by default
+        /*
+        window.onload = function () {
+            
         };
+        */
 
         function convertDateFormat(dateStr) {
             return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
         }
 
-        async function loadProfile() {
+        async function loadGames() {
+            let games
+
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
 
+            let user
+            try {
+                const response = await fetch('/api/dev_games', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    games = result.data
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            const gameListEl = document.getElementById('game-list');
+            const editForm = document.getElementById('edit-form');
+            const noSelectionEl = document.getElementById('no-selection');
+
+            // Input elements
+            const titleInput = document.getElementById('titleInput');
+            const descInput = document.getElementById('descInput');
+            const genreSelect = document.getElementById('genreSelect');
+            const priceInput = document.getElementById('priceInput');
+
+            let selectedGameId = null;
+
+            // Render the list of games
+            function renderGameList() {
+                gameListEl.innerHTML = '';
+                games.forEach((game) => {
+                    const div = document.createElement('div');
+                    div.className = 'game-item' + (game.GAME_ID === selectedGameId ? ' selected' : '');
+                    div.setAttribute('role', 'listitem');
+                    div.tabIndex = 0;
+                    div.dataset.id = game.GAME_ID;
+                    div.innerHTML = `<div class="game-title">${game.GAME_TITLE}</div>`;
+                    // click handler to select game
+                    div.onclick = () => selectGame(game.GAME_ID);
+                    // keyboard accessibility: Enter or Space to select
+                    div.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectGame(game.GAME_ID);
+                        }
+                    }
+                    gameListEl.appendChild(div);
+                });
+            }
+
+            // Select a game by id and fill the form
+            async function selectGame(id) {
+                const game = games.find(g => g.GAME_ID === id);
+                if (!game) return;
+                selectedGameId = id;
+
+                // Highlight selection in list
+                renderGameList();
+
+                // Show form and hide no-selection message
+                editForm.style.display = 'flex';
+                noSelectionEl.style.display = 'none';
+
+                // Fill inputs
+                titleInput.value = game.GAME_TITLE;
+                descInput.value = game.GAME_DESC;
+                priceInput.value = game.PRICE;
+
+                try {
+                    const response = await fetch('/api/genres_by_game', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ gameId: selectedGameId })
+                    })
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const result = await response.json();
+                    if (result.success) {
+                        genreSelect.value = result.data.length === 0 ? "" : result.data[0].GENRE
+                    } else {
+                        alert(result.message);
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error)
+                }
+
+                // Focus title input for convenience
+                titleInput.focus();
+            }
+
+            // Listen for form changes and update dynamically
+            /*
+            titleInput.addEventListener('input', updateSelectedGame);
+            descInput.addEventListener('input', updateSelectedGame);
+            genreSelect.addEventListener('change', updateSelectedGame);
+            priceInput.addEventListener('input', updateSelectedGame);
+            */
+            document.getElementById("updateGameBtn").addEventListener("click", async function () {
+                if (selectedGameId === null) return;
+                const game = games.find(g => g.GAME_ID === selectedGameId);
+                if (!game) return;
+
+                // Validate inputs before updating
+                const title = titleInput.value.trim();
+                const description = descInput.value.trim();
+                const genre = genreSelect.value;
+                const price = parseFloat(priceInput.value);
+
+                if (title.length === 0 || description.length === 0 || genre === '' || isNaN(price) || price < 0) {
+                    // Invalid input, do not update yet
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/update_game', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ gameId: selectedGameId, title, description, genre, price })
+                    })
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message)
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error)
+                }
+
+                // Update list to reflect changes
+                renderGameList();
+            })
+
+            renderGameList()
+        }
+
+        async function loadProfile() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
             let user
             try {
                 const response = await fetch('/api/get_user', {
@@ -611,7 +965,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio })
+                    body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio, profilePic })
                 })
 
                 if (!response.ok) {

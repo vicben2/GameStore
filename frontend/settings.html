@@ -206,7 +206,7 @@
           const firstName = document.getElementById('adminFirstName').value
           const lastName = document.getElementById('adminLastName').value
           let birthdate = document.getElementById('adminBirthdate').value
-          //const profilePic = picPreview.src
+          const profilePic = picPreview.src
           //localStorage.setItem('adminProfile', JSON.stringify(profile));
 
           const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
@@ -218,7 +218,7 @@
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio: "Administrator" })
+              body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio: "Administrator", profilePic })
             })
 
             if (!response.ok) {

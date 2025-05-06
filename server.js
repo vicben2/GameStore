@@ -119,13 +119,15 @@ app.post('/api/upload_game', async (req, res) => {
     try {
         const pool = await connect()
 
-        const { gameName, gameDesc, devId } = req.body
+        const { gameName, gameDesc, genre, devId, price, image } = req.body
 
         const request = pool.request()
         request.input('DEV_ID', sql.Int, devId)
         request.input('GAME_TITLE', sql.VarChar(50), gameName)
         request.input('GAME_DESC', sql.VarChar(300), gameDesc)
-        request.input('PRICE', sql.Money, 400) //default to 400 money for now, edit later
+        request.input('PRICE', sql.Money, price)
+        request.input('GAME_IMG', sql.VarChar(200), image)
+        request.input('GENRE', sql.VarChar(30), genre)
 
         await request.execute('SP_ADD_GAME').then(async (result) => {
             res.send({success: true, message: "Game added."})
@@ -165,7 +167,7 @@ app.post('/api/update_profile', async (req, res) => {
     try {
         const pool = await connect()
 
-        const { userId, email, firstName, lastName, birthdate, bio } = req.body
+        const { userId, email, firstName, lastName, birthdate, bio, profilePic } = req.body
 
         const request = pool.request()
         request.input('USERID', sql.Int, userId)
@@ -174,6 +176,7 @@ app.post('/api/update_profile', async (req, res) => {
         request.input('LNAME', sql.VarChar(50), lastName)
         request.input('DATE_OF_BIRTH', sql.DateTime, birthdate)
         request.input('BIO', sql.VarChar(500), bio)
+        request.input('PROFILE_PIC', sql.VarChar(500), profilePic)
 
         await request.execute('SP_UPDATE_PROFILE').then(async (result) => {
             res.send({success: true, message: "Profile updated."})
@@ -200,6 +203,83 @@ app.post('/api/get_user', async (req, res) => {
             res.send({success: true, data: result.recordset})
         })
 
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//get games by dev
+app.post('/api/dev_games', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId } = req.body
+
+        const request = pool.request()
+        request.input('USERID', sql.Int, userId)
+
+        await request.execute('SP_GET_GAMES_BY_DEV').then(async (result) => {
+            res.send({success: true, data: result.recordset})
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//get genres
+app.get('/api/genres', async (req, res) => {
+    try {
+        const pool = await connect()
+        const result = await pool.request().query('EXEC SP_GET_GENRES')
+        res.send(result.recordset);
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//get genres by game
+app.post('/api/genres_by_game', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { gameId } = req.body
+
+        const request = pool.request()
+        request.input('GAME_ID', sql.Int, gameId)
+
+        await request.execute('SP_GET_GENRES_BY_GAME').then(async (result) => {
+            res.send({success: true, data: result.recordset})
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//update game
+app.post('/api/update_game', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { gameId, title, description, genre, price } = req.body
+
+        const request = pool.request()
+        request.input('GAME_ID', sql.Int, gameId)
+        request.input('GAME_TITLE', sql.VarChar(50), title)
+        request.input('GAME_DESC', sql.VarChar(300), description)
+        request.input('GENRE', sql.VarChar(100), genre)
+        request.input('PRICE', sql.Money, price)
+
+        await request.execute('SP_UPDATE_GAME').then(async (result) => {
+            res.send({success: true, message: "Game updated."})
+        })
     } catch (err) {
         console.error('SQL error', err);
     } finally {
