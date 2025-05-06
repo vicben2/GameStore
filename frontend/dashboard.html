@@ -419,9 +419,8 @@
   </div>
 
   <script>
-    const username = (JSON.parse(sessionStorage.getItem("currentUser"))).USERNAME || "Guest";
-    document.getElementById("username").textContent = username;
-    const isLoggedIn = username !== "Guest";
+    const username = !sessionStorage.getItem("currentUser") ? "Guest" : (JSON.parse(sessionStorage.getItem("currentUser"))).USERNAME;
+    const isLoggedIn = username === "Guest" ? false : true;
 
     /*
     const games = [
@@ -480,16 +479,19 @@
       cart.forEach((game, i) => {
         const li = document.createElement("li");
         li.innerHTML = `
-          ${game.title} - $${game.price.toFixed(2)}
+          ${game.GAME_TITLE} - $${game.PRICE.toFixed(2)}
           <button class="remove-btn" onclick="removeFromCart(${i})">Remove</button>
         `;
         cartItems.appendChild(li);
-        total += game.price;
+        total += game.PRICE;
       });
       cartTotal.textContent = total.toFixed(2);
     }
 
     function checkout() {
+      console.log(cart)
+      return
+
       cart.forEach(game => {
         if (!purchased.find(g => g.title === game.title)) {
           purchased.push({ title: game.title, img: game.img });
@@ -591,9 +593,9 @@
 
     document.getElementById("searchInput").addEventListener("input", function () {
       const search = this.value.toLowerCase();
-      const filtered = games.filter(game =>
-        game.title.toLowerCase().includes(search) || game.genre.toLowerCase().includes(search)
-      );
+      const filtered = games.filter(game => {
+        return game.GAME_TITLE.toLowerCase().includes(search) || game.GENRES.toLowerCase().includes(search)
+    });
       displayGames(filtered);
     });
 
@@ -625,7 +627,7 @@
 
         data1.forEach(game => {
           const genres = data2.filter(game_genre => game.GAME_TITLE === game_genre.GAME_TITLE)
-          game["GENRES"] = genres.length > 0 ? genres[0].GENRES : ["None"]
+          game["GENRES"] = genres.length > 0 ? genres[0].GENRES : "None"
         });
         return data1
       } catch (error) {
