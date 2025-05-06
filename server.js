@@ -2,12 +2,30 @@ import express from 'express'
 import cors from 'cors'
 import { connect, sql } from './db.js'
 import path from 'path'
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+import multer from 'multer'
+import fs from 'fs'
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const uploadFolder = path.join(__dirname, 'frontend/uploads');
+if (!fs.existsSync(uploadFolder)) {
+    fs.mkdirSync(uploadFolder, { recursive: true });
+}
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadFolder);
+    },
+
+    filename: function (req, file, cb) {
+        //prefix to avoid overwriting
+        const prefix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, prefix + '-' + file.originalname);
+    }
+})
+const upload = multer({ storage: storage });
 const app = express();
 const port = 3333;
 
@@ -24,6 +42,19 @@ app.use(express.static(path.join(__dirname, "frontend")))
 //API endpoints
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "dashboard.html"))
+});
+
+//file upload for pic
+app.post('/upload', upload.single('picture'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    const newPath = path.join('uploads', req.file.filename);
+    
+    res.json({
+        message: 'File uploaded successfully!',
+        path: newPath.replace(/\\/g, "/")
+    });
 });
 
 //get games up to 50
@@ -130,7 +161,7 @@ app.post('/api/upload_game', async (req, res) => {
         request.input('GENRE', sql.VarChar(30), genre)
 
         await request.execute('SP_ADD_GAME').then(async (result) => {
-            res.send({success: true, message: "Game added."})
+            res.send({ success: true, message: "Game added." })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -145,16 +176,16 @@ app.get('/api/get_count', async (req, res) => {
         const { entity } = req.query
         let query = ""
 
-        switch(entity) {
+        switch (entity) {
             case "users": query = "SP_GET_ALL_USERS_COUNT"; break
             case "devs": query = "SP_GET_DEV_COUNT"; break
             case "games": query = "SP_GET_ALL_GAMES_COUNT"; break
-            default: res.send({success: false, message: "Invalid entity."})
+            default: res.send({ success: false, message: "Invalid entity." })
         }
 
         const pool = await connect()
         const result = await pool.request().query(`EXEC ${query}`)
-        res.send({success: true, data: result.recordset});
+        res.send({ success: true, data: result.recordset });
     } catch (err) {
         console.error('SQL error', err);
     } finally {
@@ -179,7 +210,7 @@ app.post('/api/update_profile', async (req, res) => {
         request.input('PROFILE_PIC', sql.VarChar(500), profilePic)
 
         await request.execute('SP_UPDATE_PROFILE').then(async (result) => {
-            res.send({success: true, message: "Profile updated."})
+            res.send({ success: true, message: "Profile updated." })
         })
 
     } catch (err) {
@@ -200,7 +231,7 @@ app.post('/api/get_user', async (req, res) => {
         request.input('USERID', sql.Int, userId)
 
         await request.execute('SP_GET_USER').then(async (result) => {
-            res.send({success: true, data: result.recordset})
+            res.send({ success: true, data: result.recordset })
         })
 
     } catch (err) {
@@ -221,7 +252,7 @@ app.post('/api/dev_games', async (req, res) => {
         request.input('USERID', sql.Int, devId)
 
         await request.execute('SP_GET_GAMES_BY_DEV').then(async (result) => {
-            res.send({success: true, data: result.recordset})
+            res.send({ success: true, data: result.recordset })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -254,7 +285,7 @@ app.post('/api/genres_by_game', async (req, res) => {
         request.input('GAME_ID', sql.Int, gameId)
 
         await request.execute('SP_GET_GENRES_BY_GAME').then(async (result) => {
-            res.send({success: true, data: result.recordset})
+            res.send({ success: true, data: result.recordset })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -279,7 +310,7 @@ app.post('/api/update_game', async (req, res) => {
         request.input('GAME_IMG', sql.VarChar(200), img)
 
         await request.execute('SP_UPDATE_GAME').then(async (result) => {
-            res.send({success: true, message: "Game updated."})
+            res.send({ success: true, message: "Game updated." })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -303,7 +334,7 @@ app.post('/api/order', async (req, res) => {
         request.input('PRICE', sql.Money, price)
 
         await request.execute('SP_ADD_NEW_ORDER').then(async (result) => {
-            res.send({success: true, message: "Transaction successful."})
+            res.send({ success: true, message: "Transaction successful." })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -323,7 +354,7 @@ app.post('/api/user_games', async (req, res) => {
         request.input('USER_ID', sql.Int, userId)
 
         await request.execute('SP_GET_USER_PURCHASED_GAMES').then(async (result) => {
-            res.send({success: true, data: result.recordset })
+            res.send({ success: true, data: result.recordset })
         })
     } catch (err) {
         console.error('SQL error', err);
@@ -343,7 +374,7 @@ app.post('/api/toggle_game', async (req, res) => {
         request.input('GAME_ID', sql.Int, gameId)
 
         await request.execute('SP_TOGGLE_DISABLE_GAME').then(async (result) => {
-            res.send({success: true, message: "Game availability has been toggled." })
+            res.send({ success: true, message: "Game availability has been toggled." })
         })
     } catch (err) {
         console.error('SQL error', err);

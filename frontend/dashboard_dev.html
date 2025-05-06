@@ -622,7 +622,7 @@
             loadProfile();
         });
 
-        document.getElementById("logout").addEventListener("click", function() {
+        document.getElementById("logout").addEventListener("click", function () {
             sessionStorage.clear()
         })
 
@@ -666,10 +666,25 @@
             const gameDesc = document.getElementById('game-description').value
             const genre = document.getElementById('game-genre').value
             const price = parseFloat(document.getElementById('game-price').value)
-            const image = ""
-            //const image = document.getElementById('previewImage').src
-            //    fileName: gameFile ? gameFile.name : '',
-            //    fileData: gameFileData
+
+            const imgFile = document.getElementById("game-image").files[0]
+
+            const formData = new FormData();
+            formData.append('picture', imgFile);
+            let img
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!response.ok) {
+                    throw new Error("Network response was not ok.");
+                }
+                const result = await response.json();
+                img = result.path
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
 
             try {
                 const response = await fetch('/api/upload_game', {
@@ -677,7 +692,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ gameName, gameDesc, genre, devId: currentUser.USER_ID, price, image })
+                    body: JSON.stringify({ gameName, gameDesc, genre, devId: currentUser.USER_ID, price, image: img })
                 })
 
                 if (!response.ok) {

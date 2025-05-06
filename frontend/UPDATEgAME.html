@@ -279,8 +279,6 @@
                 window.location.href = 'dashboard_dev.html';
             }
 
-            console.log(game)
-
             document.getElementById('game-name').value = game.GAME_TITLE || '';
             document.getElementById('game-description').value = game.GAME_DESC || '';
             document.getElementById('game-price').value = game.PRICE || '';
@@ -332,9 +330,24 @@
             const description = document.getElementById('game-description').value;
             const genre = document.getElementById('game-genre').value;
             const price = parseFloat(document.getElementById('game-price').value);
-            let img = ""
-            if (document.getElementById('previewImage').src) {
-                img = document.getElementById('previewImage').src;
+            
+            const imgFile = document.getElementById("game-image").files[0]
+
+            const formData = new FormData();
+            formData.append('picture', imgFile);
+            let img
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!response.ok) {
+                    throw new Error("Network response was not ok.");
+                }
+                const result = await response.json();
+                img = result.path
+            } catch (error) {
+                console.error('Fetch error:', error)
             }
             /*
             games[editIndex] = game;
@@ -342,7 +355,6 @@
             sessionStorage.removeItem('editGameIndex');
             alert('Game updated successfully!');
             */
-
             try {
                 const response = await fetch('/api/update_game', {
                     method: 'POST',

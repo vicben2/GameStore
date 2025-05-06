@@ -1223,6 +1223,10 @@
       // Here you would typically send the review to your backend
       console.log('Review submitted for:', currentGame.title, { rating, reviewText });
 
+      console.log(currentGame)
+
+      return
+
       // Add review to the game's reviews array
       if (!currentGame.reviews) {
         currentGame.reviews = [];
