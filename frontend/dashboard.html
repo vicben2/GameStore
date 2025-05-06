@@ -926,9 +926,13 @@
         div.className = "game-card";
 
         // Calculate average rating
+        /*
         const avgRating = game.reviews && game.reviews.length > 0
           ? (game.reviews.reduce((sum, review) => sum + review.rating, 0) / game.reviews.length).toFixed(1)
           : "No reviews";
+        */
+
+        console.log(game)
 
         div.innerHTML = `
           <img src="${game.GAME_IMG}" alt="${game.GAME_TITLE}">
@@ -936,7 +940,7 @@
           <p>Genre: ${game.GENRES}</p>
           <div class="price-tag">$${game.PRICE.toFixed(2)}</div>
           <div class="rating-tag">
-            <span>Rating: ${avgRating}</span>
+            <span>Rating: ${game.SCORES}</span>
             <span>★</span>
           </div>
           <button class="buy-btn" onclick="addToCart(${i})">Add to Cart</button>`;
@@ -1021,7 +1025,7 @@
         console.error('Fetch error:', error)
       }
 
-      
+
       purchased = purchased.filter(game => !hidden.includes(game.GAME_ID))
 
       purchased.forEach(game => {
@@ -1034,7 +1038,7 @@
             <p>Purchased</p>
             <button class="download-btn" onclick="download('${game.GAME_TITLE}')">Download</button>
             <button class="remove-collection-btn" onclick="removeFromCollection('${game.GAME_TITLE}')">Remove</button>
-            <button class="write-review-btn" onclick="openReviewDialog(findGameByTitle('${game.GAME_TITLE}'))">Write Review</button>
+            <button class="write-review-btn" onclick="openReviewDialog(${game.GAME_ID})">Write Review</button>
             ${getGameReviewsHTML(game.GAME_TITLE)}
           </div>
         `;
@@ -1154,25 +1158,30 @@
     async function fetchGamesFromDB() {
       try {
         // Start both fetches concurrently
-        const [response1, response2] = await Promise.all([
+        const [response1, response2, response3] = await Promise.all([
           fetch('api/games'),
-          fetch('api/games_genres')
+          fetch('api/games_genres'),
+          fetch('api/games_avg')
         ]);
 
         // Check if both responses are OK
-        if (!response1.ok || !response2.ok) {
+        if (!response1.ok || !response2.ok || !response3.ok) {
           throw new Error('One of the network responses was not ok');
         }
 
         // Parse both responses as JSON
-        const [data1, data2] = await Promise.all([
+        const [data1, data2, data3] = await Promise.all([
           response1.json(),
-          response2.json()
+          response2.json(),
+          response3.json()
         ]);
 
         data1.forEach(game => {
-          const genres = data2.filter(game_genre => game.GAME_TITLE === game_genre.GAME_TITLE)
-          game["GENRES"] = genres.length > 0 ? genres[0].GENRES : "None"
+          const genres = data2.filter(game_genre => game.GAME_ID === game_genre.GAME_ID)
+          game.GENRES = genres.length > 0 ? genres[0].GENRES : "None"
+
+          const scores = data3.filter(game_score => game.GAME_ID === game_score.GAME_ID)
+          game.SCORES = scores.length > 0 ? scores[0].AVG_SCORE : "None"
         });
         return data1
       } catch (error) {
@@ -1187,13 +1196,13 @@
     const ratingInput = document.getElementById('rating');
     let currentGame = null;
 
-    function openReviewDialog(game) {
+    function openReviewDialog(gameId) {
       if (!isLoggedIn) {
         window.location.href = "login.html";
         return
       }
 
-      currentGame = game;
+      currentGame = gameId;
       reviewDialog.style.display = 'block';
     }
 
@@ -1215,18 +1224,15 @@
       });
     });
 
-    reviewForm.addEventListener('submit', (e) => {
+    reviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const reviewText = document.getElementById('reviewText').value;
       const rating = ratingInput.value;
 
       // Here you would typically send the review to your backend
-      console.log('Review submitted for:', currentGame.title, { rating, reviewText });
+      console.log('Review submitted for:', currentGame, { rating, reviewText });
 
-      console.log(currentGame)
-
-      return
-
+      /*
       // Add review to the game's reviews array
       if (!currentGame.reviews) {
         currentGame.reviews = [];
@@ -1237,9 +1243,30 @@
         author: username,
         date: new Date().toLocaleDateString()
       });
+      */
 
-      closeReviewDialog();
-      displayGames();
+      try {
+        const response = await fetch('/api/review', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ gameId: currentGame, userId: currentUser.USER_ID, score: parseInt(rating), comment: reviewText })
+        })
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          alert(result.message)
+          closeReviewDialog();
+          displayGames();
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
     });
 
     // Payment functionality

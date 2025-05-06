@@ -83,6 +83,19 @@ app.get('/api/games_genres', async (req, res) => {
     }
 });
 
+//get games-average score - 50 games
+app.get('/api/games_avg', async (req, res) => {
+    try {
+        const pool = await connect()
+        const result = await pool.request().query('EXEC SP_GET_GAMES_AVG @COUNT = 50')
+        res.send(result.recordset);
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 //signup
 app.post('/api/signup', async (req, res) => {
     try {
@@ -375,6 +388,29 @@ app.post('/api/toggle_game', async (req, res) => {
 
         await request.execute('SP_TOGGLE_DISABLE_GAME').then(async (result) => {
             res.send({ success: true, message: "Game availability has been toggled." })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//add review
+app.post('/api/review', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { gameId, userId, score, comment } = req.body
+
+        const request = pool.request()
+        request.input('GAME_ID', sql.Int, gameId)
+        request.input('PLAYER_ID', sql.Int, userId)
+        request.input('SCORE', sql.Int, score)
+        request.input('COMMENT', sql.VarChar(1000), comment)
+
+        await request.execute('SP_ADD_REVIEW').then(async (result) => {
+            res.send({ success: true, message: "Your feedback is appreciated." })
         })
     } catch (err) {
         console.error('SQL error', err);
