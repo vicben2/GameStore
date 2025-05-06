@@ -931,9 +931,6 @@
           ? (game.reviews.reduce((sum, review) => sum + review.rating, 0) / game.reviews.length).toFixed(1)
           : "No reviews";
         */
-
-        console.log(game)
-
         div.innerHTML = `
           <img src="${game.GAME_IMG}" alt="${game.GAME_TITLE}">
           <h3>${game.GAME_TITLE}</h3>
@@ -1178,7 +1175,7 @@
 
         data1.forEach(game => {
           const genres = data2.filter(game_genre => game.GAME_ID === game_genre.GAME_ID)
-          game.GENRES = genres.length > 0 ? genres[0].GENRES : "None"
+          game.GENRES = genres.length > 0 ? genres[0].GENRES == undefined ? "None" : genres[0].GENRES : "None"
 
           const scores = data3.filter(game_score => game.GAME_ID === game_score.GAME_ID)
           game.SCORES = scores.length > 0 ? scores[0].AVG_SCORE : "None"

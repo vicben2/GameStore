@@ -303,6 +303,9 @@
 
             const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
             birthdate = convertDateFormat(birthdate)
+            if(img == undefined) {
+                img = currentUser.PROFILE_PIC
+            }
 
             try {
                 const response = await fetch('/api/update_profile', {
