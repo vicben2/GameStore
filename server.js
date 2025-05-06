@@ -57,8 +57,8 @@ app.post('/api/signup', async (req, res) => {
     try {
         const pool = await connect()
 
-        const { username, password } = req.body
-        const user_type = req.body.user_type === "user" ? "USER" : "DEV"
+        const { username, password, email, firstName, lastName, birthdate } = req.body
+        const user_type = req.body.user_type === "CLIENT" ? "CLIENT" : "DEV"
 
         const request = pool.request()
         request.input('USERNAME', sql.VarChar(30), username);
@@ -70,6 +70,10 @@ app.post('/api/signup', async (req, res) => {
             else {
                 request.input('PASSWORD', sql.VarChar(50), password)
                 request.input('USER_TYPE', sql.VarChar(100), user_type)
+                request.input('EMAIL', sql.VarChar(50), email)
+                request.input('FNAME', sql.VarChar(50), firstName)
+                request.input('LNAME', sql.VarChar(50), lastName)
+                request.input('DATE_OF_BIRTH', sql.DateTime, birthdate)
                 await request.execute('SP_SIGNUP_USER').then(result => {
                     res.send({ success: true })
                 })
@@ -149,6 +153,32 @@ app.get('/api/get_count', async (req, res) => {
         const pool = await connect()
         const result = await pool.request().query(`EXEC ${query}`)
         res.send({success: true, data: result.recordset});
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//update profile
+app.post('/api/update_profile', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId, email, firstName, lastName, birthdate, bio } = req.body
+
+        const request = pool.request()
+        request.input('USERID', sql.Int, userId)
+        request.input('EMAIL', sql.VarChar(50), email)
+        request.input('FNAME', sql.VarChar(50), firstName)
+        request.input('LNAME', sql.VarChar(50), lastName)
+        request.input('DATE_OF_BIRTH', sql.DateTime, birthdate)
+        request.input('BIO', sql.VarChar(500), bio)
+
+        await request.execute('SP_UPDATE_PROFILE').then(async (result) => {
+            res.send({success: true, message: "Profile updated."})
+        })
+
     } catch (err) {
         console.error('SQL error', err);
     } finally {

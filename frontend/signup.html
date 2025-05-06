@@ -12,35 +12,105 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
 
     .signup-box {
       background: #2b2b2b;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-      width: 300px;
+      width: 350px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
 
-    input,
-    select {
+    .input-group {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    input {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      border: none;
+      border: 1px solid #444;
       border-radius: 6px;
+      background-color: #333;
+      color: #fff;
+      box-sizing: border-box;
     }
 
-    button {
+    input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+
+    button[type="submit"] {
       width: 100%;
       padding: 10px;
-      background: #27ae60;
+      background: #3498db;
       border: none;
       color: white;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2980b9;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      margin-top: 5px;
+      font-size: 0.9em;
+      text-align: left;
+    }
+
+    a {
+      color: #f1c40f;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .password-toggle {
+      position: relative;
+    }
+
+    .password-toggle button {
+      background: none;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      padding: 5px;
+      outline: none;
+      font-size: 0.9em;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .password-toggle button:hover {
+      color: #fff;
+    }
+
+    .name-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .name-container .input-group {
+      flex: 1;
     }
   </style>
 </head>
@@ -48,27 +118,114 @@
 <body>
   <div class="signup-box">
     <h2>Sign Up</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <select id="role">
-      <option value="user">User</option>
-      <option value="developer">Developer</option>
-      <!-- <option value="admin">Admin</option> -->
-    </select>
-    <button onclick="signup()">Sign Up</button>
-    <p>Already have an account? <a href="login.html" style="color: #f1c40f;">Login</a></p>
+    <div class="name-container">
+      <div class="input-group">
+        <input type="text" id="firstName" placeholder="First Name" />
+        <div id="firstName-error" class="error-message"></div>
+      </div>
+      <div class="input-group">
+        <input type="text" id="lastName" placeholder="Last Name" />
+        <div id="lastName-error" class="error-message"></div>
+      </div>
+    </div>
+    <div class="input-group">
+      <input type="email" id="email" placeholder="Email" />
+      <div id="email-error" class="error-message"></div>
+    </div>
+    <div class="input-group">
+      <input type="date" id="birthdate" />
+      <div id="birthdate-error" class="error-message"></div>
+    </div>
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Username" />
+      <div id="username-error" class="error-message"></div>
+    </div>
+    <div class="input-group password-toggle">
+      <input type="password" id="password" placeholder="Password" />
+      <button type="button" id="togglePassword">Show</button>
+      <div id="password-error" class="error-message"></div>
+    </div>
+    <div class="input-group password-toggle">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      <button type="button" id="toggleConfirmPassword">Show</button>
+      <div id="confirmPassword-error" class="error-message"></div>
+    </div>
+    <div class="input-group">
+      <label style="display:block;text-align:left;margin-bottom:5px;color:#f39c12;">Account Type</label>
+      <div style="display:flex;gap:15px;justify-content:left;margin-bottom:5px;">
+        <label><input type="radio" name="role" value="client" checked> Client</label>
+        <label><input type="radio" name="role" value="developer"> Developer</label>
+      </div>
+      <div id="role-error" class="error-message"></div>
+    </div>
+    <button type="submit" onclick="signup()">Sign Up</button>
+    <p>Already have an account? <a href="login.html">Login</a></p>
   </div>
 
   <script>
+    function convertDateFormat(dateStr) {
+      return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
+    }
+
     async function signup() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      let birthdate = document.getElementById("birthdate").value;
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
-      const role = document.getElementById("role").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const role = document.querySelector('input[name="role"]:checked')?.value || "CLIENT";
 
-      if (!username || !password) {
-        alert("Please enter all fields.");
-        return;
+      // Clear previous error messages
+      document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+
+      let isValid = true;
+
+      if (!firstName) {
+        document.getElementById("firstName-error").textContent = "First name is required.";
+        isValid = false;
       }
+
+      if (!lastName) {
+        document.getElementById("lastName-error").textContent = "Last name is required.";
+        isValid = false;
+      }
+
+      if (!email) {
+        document.getElementById("email-error").textContent = "Email is required.";
+        isValid = false;
+      } else if (!isValidEmail(email)) {
+        document.getElementById("email-error").textContent = "Please enter a valid email address.";
+        isValid = false;
+      }
+
+      if (!birthdate) {
+        document.getElementById("birthdate-error").textContent = "Birthdate is required.";
+        isValid = false;
+      }
+
+      if (!username) {
+        document.getElementById("username-error").textContent = "Username is required.";
+        isValid = false;
+      }
+
+      if (!password) {
+        document.getElementById("password-error").textContent = "Password is required.";
+        isValid = false;
+      } else if (password.length < 6) {
+        document.getElementById("password-error").textContent = "Password must be at least 6 characters long.";
+        isValid = false;
+      }
+
+      if (password !== confirmPassword) {
+        document.getElementById("confirmPassword-error").textContent = "Passwords do not match.";
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      birthdate = convertDateFormat(birthdate)
 
       try {
         const response = await fetch('/api/signup', {
@@ -76,7 +233,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ username, password, user_type: role })
+          body: JSON.stringify({ username, password, user_type: role === "client" ? "CLIENT" : "DEV", email, firstName, lastName, birthdate })
         })
 
         if (!response.ok) {
@@ -94,6 +251,37 @@
         console.error('Fetch error:', error)
       }
     }
+
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Password toggle functionality
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const togglePasswordButton = document.getElementById("togglePassword");
+    const toggleConfirmPasswordButton = document.getElementById("toggleConfirmPassword");
+
+    togglePasswordButton.addEventListener("click", function () {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        togglePasswordButton.textContent = "Hide";
+      } else {
+        passwordInput.type = "password";
+        togglePasswordButton.textContent = "Show";
+      }
+    });
+
+    toggleConfirmPasswordButton.addEventListener("click", function () {
+      if (confirmPasswordInput.type === "password") {
+        confirmPasswordInput.type = "text";
+        toggleConfirmPasswordButton.textContent = "Hide";
+      } else {
+        confirmPasswordInput.type = "password";
+        toggleConfirmPasswordButton.textContent = "Show";
+      }
+    });
   </script>
 </body>
 
