@@ -287,6 +287,50 @@ app.post('/api/update_game', async (req, res) => {
     }
 });
 
+//new order
+app.post('/api/order', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { paymentId, userId, gameId, qty, price } = req.body
+
+        const request = pool.request()
+        request.input('PAYMENT_ID', sql.Int, paymentId)
+        request.input('PLAYER_ID', sql.Int, userId)
+        request.input('GAME_ID', sql.Int, gameId)
+        request.input('QTY', sql.Int, qty)
+        request.input('PRICE', sql.Money, price)
+
+        await request.execute('SP_ADD_NEW_ORDER').then(async (result) => {
+            res.send({success: true, message: "Transaction successful."})
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+//user purchased games
+app.post('/api/user_games', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId } = req.body
+
+        const request = pool.request()
+        request.input('USER_ID', sql.Int, userId)
+
+        await request.execute('SP_GET_USER_PURCHASED_GAMES').then(async (result) => {
+            res.send({success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 
 //listener
 app.listen(port, () => {
