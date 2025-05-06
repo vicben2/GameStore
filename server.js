@@ -215,10 +215,10 @@ app.post('/api/dev_games', async (req, res) => {
     try {
         const pool = await connect()
 
-        const { userId } = req.body
+        const { devId } = req.body
 
         const request = pool.request()
-        request.input('USERID', sql.Int, userId)
+        request.input('USERID', sql.Int, devId)
 
         await request.execute('SP_GET_GAMES_BY_DEV').then(async (result) => {
             res.send({success: true, data: result.recordset})
@@ -268,7 +268,7 @@ app.post('/api/update_game', async (req, res) => {
     try {
         const pool = await connect()
 
-        const { gameId, title, description, genre, price } = req.body
+        const { gameId, title, description, genre, price, img } = req.body
 
         const request = pool.request()
         request.input('GAME_ID', sql.Int, gameId)
@@ -276,6 +276,7 @@ app.post('/api/update_game', async (req, res) => {
         request.input('GAME_DESC', sql.VarChar(300), description)
         request.input('GENRE', sql.VarChar(100), genre)
         request.input('PRICE', sql.Money, price)
+        request.input('GAME_IMG', sql.VarChar(200), img)
 
         await request.execute('SP_UPDATE_GAME').then(async (result) => {
             res.send({success: true, message: "Game updated."})

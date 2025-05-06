@@ -914,6 +914,7 @@
     let games = []
     let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
     let purchased = [];
+    let hidden = JSON.parse(sessionStorage.getItem("hidden")) || []
     let downloaded = JSON.parse(sessionStorage.getItem("downloaded")) || [];
 
     async function displayGames(filteredGames = games) {
@@ -990,6 +991,10 @@
     }
 
     async function updateLibrary() {
+      if (!isLoggedIn) {
+        return
+      }
+
       const libraryList = document.getElementById("libraryList");
       const downloadedList = document.getElementById("downloadedList");
       libraryList.innerHTML = "";
@@ -1015,6 +1020,9 @@
       } catch (error) {
         console.error('Fetch error:', error)
       }
+
+      
+      purchased = purchased.filter(game => !hidden.includes(game.GAME_ID))
 
       purchased.forEach(game => {
         const div = document.createElement("div");
@@ -1079,8 +1087,8 @@
 
     function removeFromCollection(title) {
       // Remove game from purchased list by filtering
-      purchased = purchased.filter(game => game.GAME_TITLE !== title);
-      sessionStorage.setItem("purchased", JSON.stringify(purchased));
+      hidden.push(purchased.filter(game => game.GAME_TITLE === title)[0].GAME_ID)
+      sessionStorage.setItem("hidden", JSON.stringify(hidden));
       updateLibrary();
     }
 
@@ -1103,7 +1111,7 @@
     }
 
     function logout() {
-      sessionStorage.removeItem("currentUser");
+      sessionStorage.clear()
       window.location.href = "login.html";
     }
 

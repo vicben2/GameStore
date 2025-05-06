@@ -127,7 +127,7 @@
   <script>
     const logoutLink = document.getElementById("logoutLink")
     logoutLink.addEventListener("click", function () {
-      sessionStorage.removeItem("currentUser");
+      sessionStorage.clear()
       window.location.href = "login.html";
     })
 

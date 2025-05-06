@@ -241,95 +241,191 @@
             color: #f39c12;
         }
 
-        #container {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            overflow: hidden;
-            border-radius: 10px;
-            background: #1e1e2f;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.8);
-        }
-
-        #game-list {
-            overflow-y: auto;
-            border-bottom: 1px solid #333;
-            max-height: 250px;
-        }
-
         .game-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #2a2a40;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .game-item:hover {
-            background-color: #31314b;
-        }
-
-        .game-item.selected {
-            background-color: #4b51a5;
-        }
-
-        .game-title {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #c6c6ff;
-        }
-
-        .game-genre-price {
-            font-size: 0.85rem;
-            color: #aaa;
-            margin-top: 3px;
-        }
-
-        #edit-form {
-            padding: 12px 15px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            flex-grow: 1;
-            overflow-y: auto;
+            align-items: flex-start;
+            gap: 10px;
+            background: #23232b;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+            padding: 14px 14px 18px 14px;
+            position: relative;
+            transition: box-shadow 0.2s, filter 0.2s;
+            max-width: 350px;
         }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 0.9rem;
-            color: #9aa7ff;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
+        .game-item img {
             width: 100%;
-            padding: 8px 10px;
-            border: 1.8px solid #44475a;
-            border-radius: 6px;
-            font-size: 1rem;
-            background-color: #222233;
-            color: #eee;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
+            max-width: 320px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
+        .game-info h3 {
+            font-size: 1.3em;
+            color: #ffa726;
+            margin-bottom: 4px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        .game-info .game-price {
+            font-size: 1.1em;
+            color: #f39c12;
+            font-weight: bold;
+            margin: 4px 0 8px 0;
+            letter-spacing: 1px;
+        }
+
+        .game-info p {
+            font-size: 0.98em;
+            color: #ccc;
+            margin-bottom: 0;
+        }
+
+        .game-actions {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            margin: 0 auto;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .disable-btn,
+        .enable-btn,
+        .edit-btn,
+        .delete-btn {
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: unset;
+            width: auto;
+            position: relative;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .edit-btn:hover,
+        .edit-btn:focus {
+            background: #217dbb;
+            box-shadow: 0 2px 8px #217dbb44;
             outline: none;
-            border-color: #7d88ff;
-            background-color: #33334d;
         }
 
-        ::placeholder {
-            color: #888abb;
+        .delete-btn {
+            background: #8e44ad;
+            color: #fff;
         }
 
-        #no-selection {
-            text-align: center;
-            color: #777a9c;
-            font-style: italic;
-            margin-top: 20px;
+        .delete-btn:hover,
+        .delete-btn:focus {
+            background: #6c3483;
+            box-shadow: 0 2px 8px #6c348344;
+            outline: none;
+        }
+
+        .disable-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .disable-btn:hover,
+        .disable-btn:focus {
+            background: #c0392b;
+            box-shadow: 0 2px 8px #c0392b44;
+            outline: none;
+        }
+
+        .enable-btn {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .enable-btn:hover,
+        .enable-btn:focus {
+            background: #27ae60;
+            box-shadow: 0 2px 8px #27ae6044;
+            outline: none;
+        }
+
+        .game-actions .btn-label {
+            display: none;
+        }
+
+        .game-actions button[title]::after {
+            content: attr(title);
+            position: absolute;
+            left: 50%;
+            bottom: 110%;
+            transform: translateX(-50%);
+            background: #222;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .game-actions button:hover::after,
+        .game-actions button:focus::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .game-item {
+                max-width: 100%;
+                padding: 10px 4px 14px 4px;
+            }
+
+            .game-item img {
+                max-width: 100%;
+            }
+
+            .game-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .game-actions .btn-label {
+                display: inline;
+                margin-left: 6px;
+                font-size: 1em;
+                font-weight: 500;
+            }
+
+            .game-actions button[title]::after {
+                display: none;
+            }
+
+            .disable-btn,
+            .enable-btn,
+            .edit-btn,
+            .delete-btn {
+                width: 100%;
+                justify-content: center;
+                font-size: 1.05em;
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
@@ -365,7 +461,6 @@
                     <label for="game-genre">Game Genre</label>
                     <select id="game-genre" name="game_genre" required
                         style="background-color: #333; color: #fff; border: 2px solid #444; border-radius: 8px; padding: 14px; font-size: 1em;">
-                        <!--
                         <option value="">Select a genre</option>
                         <option value="Action">Action</option>
                         <option value="Adventure">Adventure</option>
@@ -377,7 +472,6 @@
                         <option value="Racing">Racing</option>
                         <option value="Horror">Horror</option>
                         <option value="Other">Other</option>
-                        -->
                     </select>
                 </div>
                 <div class="form-group">
@@ -416,32 +510,10 @@
 
         <div id="gamesSection" style="display: none;">
             <h2>My Games</h2>
-            <div id="game-list" role="list" aria-label="List of games">
+            <div class="games-list" id="gamesList">
                 <!-- Games will be listed here -->
             </div>
-            <form id="edit-form" aria-label="Edit selected game" style="display:none;">
-                <div>
-                    <label for="titleInput">Title</label>
-                    <input type="text" id="titleInput" name="title" required />
-                </div>
-                <div>
-                    <label for="descInput">Description</label>
-                    <input type="text" id="descInput" name="description" required />
-                </div>
-                <div>
-                    <label for="genreSelect">Genre</label>
-                    <select id="genreSelect" name="genre" required>
-                    </select>
-                </div>
-                <div>
-                    <label for="priceInput">Price ($)</label>
-                    <input type="number" id="priceInput" name="price" min="0" step="0.01" required />
-                </div>
-                <input style="font-size: 1.5em;" id="updateGameBtn" type="button" value="Update game">
-            </form>
-            <div id="no-selection">Select a game to edit its details</div>
         </div>
-
 
         <div id="profileSection" style="display: none;">
             <h2>Developer Profile</h2>
@@ -681,13 +753,13 @@
                 }
 
                 await response.json().then(result => {
-                    const gameGenreOptionsElem = document.getElementById("game-genre")
-                    const genreSelectElem = document.getElementById("genreSelect")
-                    gameGenreOptionsElem.innerHTML = '<option value="" disable>Select a genre</option>'
+                    //const gameGenreOptionsElem = document.getElementById("game-genre")
+                    const genreSelectElem = document.getElementById("game-genre")
+                    //gameGenreOptionsElem.innerHTML = '<option value="" disable>Select a genre</option>'
                     genreSelectElem.innerHTML = '<option value="" disable>Select a genre</option>'
 
                     result.forEach(genre => {
-                        gameGenreOptionsElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
+                        //    gameGenreOptionsElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
                         genreSelectElem.innerHTML += `<option value="${genre.GENRE}">${genre.GENRE}</option>`
                     });
                 })
@@ -732,166 +804,6 @@
             return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
         }
 
-        async function loadGames() {
-            let games
-
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
-
-            let user
-            try {
-                const response = await fetch('/api/dev_games', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: currentUser.USER_ID })
-                })
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const result = await response.json();
-                if (result.success) {
-                    games = result.data
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                console.error('Fetch error:', error)
-            }
-
-            const gameListEl = document.getElementById('game-list');
-            const editForm = document.getElementById('edit-form');
-            const noSelectionEl = document.getElementById('no-selection');
-
-            // Input elements
-            const titleInput = document.getElementById('titleInput');
-            const descInput = document.getElementById('descInput');
-            const genreSelect = document.getElementById('genreSelect');
-            const priceInput = document.getElementById('priceInput');
-
-            let selectedGameId = null;
-
-            // Render the list of games
-            function renderGameList() {
-                gameListEl.innerHTML = '';
-                games.forEach((game) => {
-                    const div = document.createElement('div');
-                    div.className = 'game-item' + (game.GAME_ID === selectedGameId ? ' selected' : '');
-                    div.setAttribute('role', 'listitem');
-                    div.tabIndex = 0;
-                    div.dataset.id = game.GAME_ID;
-                    div.innerHTML = `<div class="game-title">${game.GAME_TITLE}</div>`;
-                    // click handler to select game
-                    div.onclick = () => selectGame(game.GAME_ID);
-                    // keyboard accessibility: Enter or Space to select
-                    div.onkeydown = (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            selectGame(game.GAME_ID);
-                        }
-                    }
-                    gameListEl.appendChild(div);
-                });
-            }
-
-            // Select a game by id and fill the form
-            async function selectGame(id) {
-                const game = games.find(g => g.GAME_ID === id);
-                if (!game) return;
-                selectedGameId = id;
-
-                // Highlight selection in list
-                renderGameList();
-
-                // Show form and hide no-selection message
-                editForm.style.display = 'flex';
-                noSelectionEl.style.display = 'none';
-
-                // Fill inputs
-                titleInput.value = game.GAME_TITLE;
-                descInput.value = game.GAME_DESC;
-                priceInput.value = game.PRICE;
-
-                try {
-                    const response = await fetch('/api/genres_by_game', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ gameId: selectedGameId })
-                    })
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
-                    const result = await response.json();
-                    if (result.success) {
-                        genreSelect.value = result.data.length === 0 ? "" : result.data[0].GENRE
-                    } else {
-                        alert(result.message);
-                    }
-                } catch (error) {
-                    console.error('Fetch error:', error)
-                }
-
-                // Focus title input for convenience
-                titleInput.focus();
-            }
-
-            // Listen for form changes and update dynamically
-            /*
-            titleInput.addEventListener('input', updateSelectedGame);
-            descInput.addEventListener('input', updateSelectedGame);
-            genreSelect.addEventListener('change', updateSelectedGame);
-            priceInput.addEventListener('input', updateSelectedGame);
-            */
-            document.getElementById("updateGameBtn").addEventListener("click", async function () {
-                if (selectedGameId === null) return;
-                const game = games.find(g => g.GAME_ID === selectedGameId);
-                if (!game) return;
-
-                // Validate inputs before updating
-                const title = titleInput.value.trim();
-                const description = descInput.value.trim();
-                const genre = genreSelect.value;
-                const price = parseFloat(priceInput.value);
-
-                if (title.length === 0 || description.length === 0 || genre === '' || isNaN(price) || price < 0) {
-                    // Invalid input, do not update yet
-                    return;
-                }
-
-                try {
-                    const response = await fetch('/api/update_game', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ gameId: selectedGameId, title, description, genre, price })
-                    })
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
-                    const result = await response.json();
-                    if (result.success) {
-                        alert(result.message)
-                    }
-                } catch (error) {
-                    console.error('Fetch error:', error)
-                }
-
-                // Update list to reflect changes
-                renderGameList();
-            })
-
-            renderGameList()
-        }
-
         async function loadProfile() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
             let user
@@ -923,9 +835,11 @@
             document.getElementById('email').value = user.EMAIL || '';
             document.getElementById('birthdate').value = convertDateFormat(user.DATE_OF_BIRTH) || '';
             document.getElementById('bio').value = user.BIO || '';
+            /*
             if (user.PROFILE_PIC) {
                 document.getElementById('profilePicPreview').src = user.PROFILE_PIC;
             }
+            */
             const fullName = `${document.getElementById('firstName').value || 'Developer'} ${document.getElementById('lastName').value || 'Name'}`.trim();
             document.getElementById('devFullName').textContent = fullName;
 
@@ -994,6 +908,76 @@
                 output.src = reader.result;
             }
             reader.readAsDataURL(event.target.files[0]);
+        }
+
+        async function loadGames() {
+            const gamesList = document.getElementById('gamesList');
+            //const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
+            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+
+            let games
+            try {
+                const response = await fetch('/api/dev_games', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ devId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    games = result.data
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+            
+            gamesList.innerHTML = '';
+            games.forEach((game, index) => {
+                const isDisabled = game.DISABLED === 0 ? false : true;
+                const gameElement = document.createElement('div');
+                gameElement.className = 'game-item' + (isDisabled ? ' disabled' : '');
+                gameElement.innerHTML = `
+                    <img src="${game.GAME_IMG}" alt="${game.GAME_TITLE}">
+                    <div class="game-actions">
+                        <button class="edit-btn" title="Edit" onclick="editGame(${game.GAME_ID})"><span style='font-size:1.1em;'>✏️</span><span class='btn-label'>Edit</span></button>
+                        <button class="${isDisabled ? 'enable-btn' : 'disable-btn'}" title="${isDisabled ? 'Enable' : 'Disable'}" onclick="toggleDisableGame(${game.GAME_ID})">${isDisabled ? "<span style='font-size:1.1em;'>✅</span><span class='btn-label'>Enable</span>" : "<span style='font-size:1.1em;'>🚫</span><span class='btn-label'>Disable</span>"}</button>
+                    </div>
+                    <div class="game-info">
+                        <h3>${game.GAME_TITLE}</h3>
+                        <div class="game-price">$${game.PRICE.toFixed(2)}</div>
+                        <p>${game.GAME_DESC}</p>
+                    </div>
+                    ${isDisabled ? '<span class="disabled-badge">Disabled</span>' : ''}
+                `;
+                gamesList.appendChild(gameElement);
+            });
+        }
+
+        function editGame(index) {
+            sessionStorage.setItem('editGameIndex', index);
+            window.location.href = 'UPDATEgAME.html';
+        }
+
+        function toggleDisableGame(index) {
+            const games = JSON.parse(sessionStorage.getItem('developerGames') || '[]');
+            games[index].disabled = !games[index].disabled;
+            sessionStorage.setItem('developerGames', JSON.stringify(games));
+            loadGames();
+        }
+
+        function deleteGame(index) {
+            const games = JSON.parse(sessionStorage.getItem('developerGames') || '[]');
+            if (confirm('Are you sure you want to delete this game?')) {
+                games.splice(index, 1);
+                sessionStorage.setItem('developerGames', JSON.stringify(games));
+                loadGames();
+            }
         }
     </script>
 </body>
