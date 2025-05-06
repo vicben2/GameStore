@@ -1,148 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Settings - Developer Dashboard</title>
+  <title>Settings - Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background-color: #121212;
+      background: #121212;
       color: #fff;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
     }
 
     header {
-      background-color: #1f1f1f;
-      padding: 25px 0;
+      background: #1f1f1f;
+      padding: 20px;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
     header h1 {
       margin: 0;
-      font-size: 2.5em;
-      color: #fff;
+      font-size: 2em;
     }
 
-    nav.nav-links {
+    nav {
       display: flex;
       justify-content: center;
-      gap: 15px;
-      background-color: #333;
-      padding: 20px;
+      background: #292929;
+      padding: 15px;
+      gap: 20px;
     }
 
-    nav.nav-links a {
+    nav a {
       color: #fff;
-      padding: 12px 20px;
       text-decoration: none;
-      font-size: 1.2em;
-      text-transform: uppercase;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-size: 1.1em;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background 0.3s;
     }
 
-    nav.nav-links a:hover {
-      background-color: #575757;
-      transform: scale(1.05);
-      border-radius: 5px;
+    nav a:hover {
+      background: #444;
     }
 
     .content {
       padding: 40px;
-      margin: 20px;
-      background-color: #2a2a2a;
-      border-radius: 10px;
-      flex-grow: 1;
     }
 
-    .content h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
+    h2 {
       color: #f39c12;
     }
 
-    .setting-group {
-      margin-bottom: 20px;
+    .section {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 8px;
+      margin-bottom: 30px;
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
       color: #f39c12;
+      margin-bottom: 5px;
     }
 
-    input[type="text"],
     input[type="email"],
-    input[type="password"] {
+    input[type="text"],
+    input[type="date"] {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
+      border-radius: 5px;
       border: 1px solid #444;
-      background-color: #333;
+      background: #222;
       color: #fff;
-      border-radius: 8px;
-      font-size: 1em;
+      margin-bottom: 15px;
     }
 
-    button {
-      padding: 14px 25px;
-      font-size: 1.2em;
+    .btn {
       background-color: #f39c12;
       color: white;
+      padding: 12px 20px;
       border: none;
-      border-radius: 8px;
+      border-radius: 5px;
+      font-size: 1em;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
-    button:hover {
+    .btn:hover {
       background-color: #e67e22;
       transform: scale(1.05);
     }
 
     footer {
-      background-color: #1f1f1f;
-      padding: 15px;
+      background: #1f1f1f;
+      color: #aaa;
       text-align: center;
-      color: #ccc;
-      margin-top: auto;
+      padding: 15px;
     }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>Developer Dashboard</h1>
+    <h1>Settings</h1>
   </header>
-  <nav class="nav-links">
-    <a href="manage-games.html">Manage Games</a>
+  <nav>
+    <a href="admin.html">Dashboard</a>
+    <a href="manage-users.html">Manage Users</a>
+    <a href="reports.html">Reports</a>
     <a href="settings.html">Settings</a>
     <a href="logout.html">Logout</a>
   </nav>
   <div class="content">
-    <h2>Account Settings</h2>
-    <form>
-      <div class="setting-group">
-        <label for="username">Developer Name</label>
-        <input type="text" id="username" name="username" placeholder="Your name">
-      </div>
-      <div class="setting-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="Your email">
-      </div>
-      <div class="setting-group">
-        <label for="password">Change Password</label>
-        <input type="password" id="password" name="password" placeholder="New password">
-      </div>
-      <button type="submit">Save Settings</button>
-    </form>
+    <div class="section">
+      <h2>Admin Profile</h2>
+      <form id="adminProfileForm">
+        <div style="margin-bottom: 18px; text-align:center;">
+          <img id="adminProfilePic" src="https://via.placeholder.com/120" alt="Profile Picture"
+            style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid #f39c12;display:block;margin:0 auto 10px auto;">
+          <input type="file" id="adminPicUpload" accept="image/*" style="display:block;margin:0 auto;">
+        </div>
+        <label for="adminEmail">Email</label>
+        <input type="email" id="adminEmail" name="adminEmail" required>
+        <label for="adminFirstName">First Name</label>
+        <input type="text" id="adminFirstName" name="adminFirstName" required>
+        <label for="adminLastName">Last Name</label>
+        <input type="text" id="adminLastName" name="adminLastName" required>
+        <label for="adminBirthdate">Birthdate</label>
+        <input type="date" id="adminBirthdate" name="adminBirthdate" required>
+        <button type="submit" class="btn">Save Profile</button>
+      </form>
+    </div>
   </div>
   <footer>
-    <p>&copy; 2025 Your Game Store. All rights reserved.</p>
+    &copy; 2025 Game Store Admin Panel. All rights reserved.
   </footer>
+  <script>
+    // Admin Profile Form Logic
+    document.addEventListener('DOMContentLoaded', async function () {
+      const form = document.getElementById('adminProfileForm');
+      const picInput = document.getElementById('adminPicUpload');
+      const picPreview = document.getElementById('adminProfilePic');
+      if (form) {
+        // Load saved profile if exists
+        /*
+        const saved = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+        if (saved.email) document.getElementById('adminEmail').value = saved.email;
+        if (saved.firstName) document.getElementById('adminFirstName').value = saved.firstName;
+        if (saved.lastName) document.getElementById('adminLastName').value = saved.lastName;
+        if (saved.birthdate) document.getElementById('adminBirthdate').value = saved.birthdate;
+        if (saved.profilePic) picPreview.src = saved.profilePic;
+        */
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+        let user
+        try {
+          const response = await fetch('/api/get_user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: currentUser.USER_ID })
+          })
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          const result = await response.json();
+          if (result.success) {
+            user = result.data[0]
+          } else {
+            alert(result.message);
+          }
+        } catch (error) {
+          console.error('Fetch error:', error)
+        }
+
+        document.getElementById('adminEmail').value = user.EMAIL;
+        document.getElementById('adminFirstName').value = user.FNAME;
+        document.getElementById('adminLastName').value = user.LNAME;
+        document.getElementById('adminBirthdate').value = convertDateFormat(user.DATE_OF_BIRTH)
+        //picPreview.src = saved.profilePic;
+
+        /*
+        picInput.addEventListener('change', function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+              picPreview.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+        */
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById('adminEmail').value
+          const firstName = document.getElementById('adminFirstName').value
+          const lastName = document.getElementById('adminLastName').value
+          let birthdate = document.getElementById('adminBirthdate').value
+          //const profilePic = picPreview.src
+          //localStorage.setItem('adminProfile', JSON.stringify(profile));
+
+          const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+          birthdate = convertDateFormat(birthdate)
+
+          try {
+            const response = await fetch('/api/update_profile', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio: "Administrator" })
+            })
+
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+
+            const result = await response.json();
+            if (result.success) {
+              alert(result.message)
+            } else {
+              alert(result.message);
+            }
+          } catch (error) {
+            console.error('Fetch error:', error)
+          }
+
+          //alert('Profile saved!');
+        });
+      }
+    });
+
+    function convertDateFormat(dateStr) {
+      return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
+    }
+  </script>
 </body>
+
 </html>

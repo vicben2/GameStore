@@ -186,6 +186,27 @@ app.post('/api/update_profile', async (req, res) => {
     }
 });
 
+//get user
+app.post('/api/get_user', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId } = req.body
+
+        const request = pool.request()
+        request.input('USERID', sql.Int, userId)
+
+        await request.execute('SP_GET_USER').then(async (result) => {
+            res.send({success: true, data: result.recordset})
+        })
+
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 //listener
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

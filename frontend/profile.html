@@ -188,18 +188,40 @@
         }
 
         // Load user data when page loads
-        document.addEventListener('DOMContentLoaded', function () {
-            const currentUser = sessionStorage.getItem('currentUser');
-            if (!currentUser) {
+        window.onload = async function () {
+            if (!sessionStorage.getItem("currentUser")) {
                 window.location.href = 'login.html';
                 return;
             }
 
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
             /*
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => u.username === currentUser);
             */
-            const user = JSON.parse(currentUser)
+            let user
+            try {
+                const response = await fetch('/api/get_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    user = result.data[0]
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
 
             document.getElementById('firstName').value = user.FNAME || '';
             document.getElementById('lastName').value = user.LNAME || '';
@@ -207,9 +229,9 @@
             document.getElementById('birthdate').value = convertDateFormat(user.DATE_OF_BIRTH) || '';
             document.getElementById('bio').value = user.BIO || '';
             if (user.PROFILE_PIC) {
-                document.getElementById('profilePicPreview').src = user.profilePic;
+                document.getElementById('profilePicPreview').src = user.PROFILE_PIC;
             }
-        });
+        }
 
         // Profile picture upload preview
         document.getElementById('profilePic').addEventListener('change', function (e) {
@@ -280,7 +302,6 @@
                 const result = await response.json();
                 if (result.success) {
                     alert(result.message);
-                    window.location.href = "dashboard.html"; // Redirect to login page after sign-up
                 } else {
                     alert(result.message);
                 }
