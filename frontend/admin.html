@@ -112,11 +112,39 @@
     <div class="section">
       <h2>System Overview</h2>
       <ul>
-        <li>Total Users: <span id="usersCount"></span></li>
-        <li>Active Developers: <span id="devCount"></span></li>
-        <li>Games Listed: <span id="gamesCount"></span></li>
+        <li id="usersCount">Total Users: 128</li>
+        <li id="devCount">Active Developers: 17</li>
+        <li id="gamesCount">Games Listed: 243</li>
         <li>Pending Reports: 5</li>
       </ul>
+    </div>
+
+    <div class="section">
+      <h2>Game Revenue Overview</h2>
+      <div style="overflow-x:auto;">
+        <table id="revenueTable" style="width:100%; background:#181818; color:#fff; border-radius:8px;">
+          <thead>
+            <tr style="background:#222; color:#f39c12;">
+              <th>Game Title</th>
+              <th>Developer</th>
+              <th>Total Revenue</th>
+              <th>Admin Share (30%)</th>
+              <th>Developer Share (70%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated by JS -->
+          </tbody>
+          <tfoot>
+            <tr style="background:#222; font-weight:bold;">
+              <td colspan="2">TOTAL</td>
+              <td id="totalRevenue">$0.00</td>
+              <td id="totalAdminShare">$0.00</td>
+              <td id="totalDevShare">$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -162,14 +190,108 @@
         const devCountElem = document.getElementById("devCount")
         const gamesCountElem = document.getElementById("gamesCount")
 
-        usersCountElem.innerText = usersCount.data[0].USERS_COUNT
-        devCountElem.innerText = devsCount.data[0].DEV_COUNT
-        gamesCountElem.innerText = gamesCount.data[0].GAMES_COUNT
+        usersCountElem.innerText = "Total users: " + usersCount.data[0].USERS_COUNT
+        devCountElem.innerText = "Active developers: " + devsCount.data[0].DEV_COUNT
+        gamesCountElem.innerText = "Games listed: " + gamesCount.data[0].GAMES_COUNT
 
       } catch (error) {
         console.error('Fetch error:', error)
       }
+
+      if (typeof loadRevenueTable === 'function') loadRevenueTable();
     })
+
+    async function loadRevenueTable() {
+      let data
+
+      try {
+        const response = await fetch('/api/all_game_sales')
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          data = result.data
+          const tbody = document.querySelector('#revenueTable tbody');
+          let totalRevenue = 0, totalAdmin = 0, totalDev = 0;
+          tbody.innerHTML = '';
+          data.forEach(game => {
+            //const gamePurchases = purchases.filter(p => p.gameId === game.id);
+            //const gameRevenue = gamePurchases.reduce((sum, p) => sum + (p.price || 0), 0);
+            const gameRevenue = +(game.TOTAL_REVENUE).toFixed(2)
+            const adminShare = +(gameRevenue * 0.3).toFixed(2);
+            const devShare = +(gameRevenue * 0.7).toFixed(2);
+            totalRevenue += gameRevenue;
+            totalAdmin += adminShare;
+            totalDev += devShare;
+            // Find developer name
+            /*
+            let developer = game.developer || game.developerName;
+            if (!developer && game.developerId) {
+              const devUser = users.find(u => u.id === game.developerId || u.username === game.developerId);
+              developer = devUser ? (devUser.username || devUser.name) : 'N/A';
+            }
+            developer = developer || 'N/A';
+            */
+            const developer = game.USERNAME
+            //const title = game.title || game.name || 'N/A';
+            const title = game.GAME_TITLE
+            tbody.innerHTML += `<tr>
+              <td>${title}</td>
+              <td>${developer}</td>
+              <td>₱${gameRevenue.toFixed(2)}</td>
+              <td style='color:#f39c12;'>₱${adminShare.toFixed(2)}</td>
+              <td style='color:#27ae60;'>₱${devShare.toFixed(2)}</td>
+            </tr>`;
+          });
+          document.getElementById('totalRevenue').textContent = `₱${parseFloat(totalRevenue).toFixed(2)}`;
+          document.getElementById('totalAdminShare').textContent = `₱${parseFloat(totalAdmin).toFixed(2)}`;
+          document.getElementById('totalDevShare').textContent = `₱${parseFloat(totalDev).toFixed(2)}`;
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
+      /*
+      //const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
+      //const purchases = JSON.parse(localStorage.getItem('gamePurchases') || '[]');
+      //const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const tbody = document.querySelector('#revenueTable tbody');
+      let totalRevenue = 0, totalAdmin = 0, totalDev = 0;
+      tbody.innerHTML = '';
+      data.forEach(game => {
+        //const gamePurchases = purchases.filter(p => p.gameId === game.id);
+        //const gameRevenue = gamePurchases.reduce((sum, p) => sum + (p.price || 0), 0);
+        const gameRevenue = game.TOTAL_REVENUE.toFixed(2)
+        const adminShare = +(gameRevenue * 0.3).toFixed(2);
+        const devShare = +(gameRevenue * 0.7).toFixed(2);
+        totalRevenue += gameRevenue;
+        totalAdmin += adminShare;
+        totalDev += devShare;
+        // Find developer name
+        let developer = game.developer || game.developerName;
+        if (!developer && game.developerId) {
+          const devUser = users.find(u => u.id === game.developerId || u.username === game.developerId);
+          developer = devUser ? (devUser.username || devUser.name) : 'N/A';
+        }
+        developer = developer || 'N/A';
+        const developer = game.USERNAME
+        //const title = game.title || game.name || 'N/A';
+        const title = game.GAME_TITLE
+        tbody.innerHTML += `<tr>
+          <td>${title}</td>
+          <td>${developer}</td>
+          <td>₱${parseFloat(gameRevenue).toFixed(2)}</td>
+          <td style='color:#f39c12;'>₱${adminShare.toFixed(2)}</td>
+          <td style='color:#27ae60;'>₱${devShare.toFixed(2)}</td>
+        </tr>`;
+      });
+      document.getElementById('totalRevenue').textContent = `₱${totalRevenue.toFixed(2)}`;
+      document.getElementById('totalAdminShare').textContent = `₱${totalAdmin.toFixed(2)}`;
+      document.getElementById('totalDevShare').textContent = `₱${totalDev.toFixed(2)}`;
+      */
+    }
   </script>
 </body>
 

@@ -142,8 +142,9 @@
   <script>
     // Admin Profile Form Logic
     document.addEventListener('DOMContentLoaded', async function () {
+      document.getElementById('adminBirthdate').max = new Date().toISOString().split('T')[0];
       const form = document.getElementById('adminProfileForm');
-      const picInput = document.getElementById('adminPicUpload');
+      //const picInput = document.getElementById('adminPicUpload');
       const picPreview = document.getElementById('adminProfilePic');
       if (form) {
         // Load saved profile if exists
@@ -184,7 +185,7 @@
         document.getElementById('adminFirstName').value = user.FNAME;
         document.getElementById('adminLastName').value = user.LNAME;
         document.getElementById('adminBirthdate').value = convertDateFormat(user.DATE_OF_BIRTH)
-        //picPreview.src = saved.profilePic;
+        picPreview.src = user.PROFILE_PIC;
 
         /*
         picInput.addEventListener('change', function (e) {
@@ -206,10 +207,35 @@
           const firstName = document.getElementById('adminFirstName').value
           const lastName = document.getElementById('adminLastName').value
           let birthdate = document.getElementById('adminBirthdate').value
-          const profilePic = picPreview.src
+          //const profilePic = picPreview.src
           //localStorage.setItem('adminProfile', JSON.stringify(profile));
 
           const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+          const imgFile = document.getElementById("adminPicUpload").files[0]
+          let img
+          if (imgFile != undefined) {
+            const formData = new FormData();
+            formData.append('picture', imgFile);
+            try {
+              const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+              });
+              if (!response.ok) {
+                throw new Error("Network response was not ok.");
+              }
+              const result = await response.json();
+              img = result.path
+              currentUser.PROFILE_PIC = img
+              sessionStorage.setItem("currentUser", JSON.stringify(currentUser))
+            } catch (error) {
+              console.error('Fetch error:', error)
+            }
+          }
+          else {
+            img = currentUser.PROFILE_PIC
+          }
+
           birthdate = convertDateFormat(birthdate)
 
           try {
@@ -218,7 +244,7 @@
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio: "Administrator", profilePic })
+              body: JSON.stringify({ userId: currentUser.USER_ID, email, firstName, lastName, birthdate, bio: "Administrator", profilePic: img })
             })
 
             if (!response.ok) {

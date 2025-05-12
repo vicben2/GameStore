@@ -199,6 +199,7 @@
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => u.username === currentUser);
             */
+            document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
             let user
             try {
                 const response = await fetch('/api/get_user', {
@@ -282,30 +283,33 @@
 
             if (!isValid) return;
 
-            const imgFile = document.getElementById("profilePic").files[0]
-
-            const formData = new FormData();
-            formData.append('picture', imgFile);
-            let img
-            try {
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok.");
-                }
-                const result = await response.json();
-                img = result.path
-            } catch (error) {
-                console.error('Fetch error:', error)
-            }
-
             const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
-            birthdate = convertDateFormat(birthdate)
-            if(img == undefined) {
+            const imgFile = document.getElementById("profilePic").files[0]
+            let img
+            if (imgFile != undefined) {
+                const formData = new FormData();
+                formData.append('picture', imgFile);
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok.");
+                    }
+                    const result = await response.json();
+                    img = result.path
+                    currentUser.PROFILE_PIC = img
+                    sessionStorage.setItem("currentUser", JSON.stringify(currentUser))
+                } catch (error) {
+                    console.error('Fetch error:', error)
+                }
+            }
+            else {
                 img = currentUser.PROFILE_PIC
             }
+
+            birthdate = convertDateFormat(birthdate)
 
             try {
                 const response = await fetch('/api/update_profile', {

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Revenue Overview</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f1f1f;
+            padding: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 40px;
+            margin: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .section {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #f39c12;
+        }
+
+        table {
+            width: 100%;
+            background: #181818;
+            color: #fff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: #222;
+            color: #f39c12;
+        }
+
+        tfoot tr {
+            background: #222;
+            font-weight: bold;
+        }
+
+        td {
+            border-bottom: 1px solid #333;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            table {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Developer Revenue Overview</h1>
+    </header>
+    <div class="content">
+        <div class="section">
+            <button onclick="window.location.href='dashboard_dev.html'"
+                style="background:#f39c12; color:#fff; border:none; border-radius:6px; padding:10px 22px; font-size:1.1em; margin-bottom:22px; cursor:pointer; transition:background 0.2s;">←
+                Back to Dashboard</button>
+            <h2>Game Revenue Overview</h2>
+            <div id="devGameSummary" style="font-size:1.2em; color:#f39c12; margin-bottom:18px;"></div>
+            <div style="overflow-x:auto;">
+                <table id="devRevenueTable">
+                    <thead>
+                        <tr>
+                            <th>Game Title</th>
+                            <th>Game Price</th>
+                            <th>Purchases</th>
+                            <th>Total Revenue</th>
+                            <th>Admin Share (30%)</th>
+                            <th>Developer Share (70%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>TOTAL</td>
+                            <td id="devTotalGamePrice"></td>
+                            <td id="devTotalPurchases">0</td>
+                            <td id="devTotalRevenue">₱0.00</td>
+                            <td id="devTotalAdminShare">₱0.00</td>
+                            <td id="devTotalDevShare">₱0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <footer style="background:#1f1f1f; color:#aaa; text-align:center; padding:15px;">
+        &copy; 2025 Game Store Developer Panel. All rights reserved.
+    </footer>
+    <script>
+        async function loadDevRevenueTable() {
+            //const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
+            //const purchases = JSON.parse(localStorage.getItem('gamePurchases') || '[]');
+            //const users = JSON.parse(localStorage.getItem('users') || '[]');
+            //const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            //const username = currentUser.username || currentUser.name || '';
+            const tbody = document.querySelector('#devRevenueTable tbody');
+            //let totalRevenue = 0, totalAdmin = 0, totalDev = 0, totalGamePrice = 0;
+            tbody.innerHTML = '';
+            // Only show games for this developer
+            /*
+            const myGames = games.filter(game => {
+                let devName = (game.developer || game.developerName || '').toLowerCase();
+                let devId = game.developerId ? String(game.developerId).toLowerCase() : '';
+                return (
+                    devName === username.toLowerCase() ||
+                    devId === (currentUser.id ? String(currentUser.id).toLowerCase() : '') ||
+                    devId === username.toLowerCase()
+                );
+            });
+            */
+            // Show total games created
+            //document.getElementById('devGameSummary').textContent = `Total Games Created: ${myGames.length}`;
+
+            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+            let data
+            let totalPrice = 0
+
+            try {
+                const response = await fetch('/api/dev_per_game_sales', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    result.data.forEach(game => {
+                        //const gamePurchases = purchases.filter(p => p.gameId === game.id);
+                        //const gameRevenue = gamePurchases.reduce((sum, p) => sum + (p.price || 0), 0);
+                        const adminShare = game.ADMIN_SHARE.toFixed(2);
+                        const devShare = game.DEV_SHARE.toFixed(2);
+                        //totalRevenue += gameRevenue;
+                        //totalAdmin += adminShare;
+                        //totalDev += devShare;
+                        //totalGamePrice += game.price || 0;
+                        //const title = game.title || game.name || 'N/A';
+                        const title = game.GAME_TITLE
+                        const purchaseCount = game.PURCHASE_COUNT
+                        const totalRev = game.TOTAL_REV.toFixed(2)
+                        //const price = typeof game.price === 'number' ? `₱${game.price.toFixed(2)}` : 'N/A';
+                        const price = game.PRICE.toFixed(2)
+                        totalPrice += price
+                        tbody.innerHTML += `<tr>
+                            <td>${title}</td>
+                            <td>${price}</td>
+                            <td>${purchaseCount}</td>
+                            <td>₱${totalRev}</td>
+                            <td style='color:#f39c12;'>₱${adminShare}</td>
+                            <td style='color:#27ae60;'>₱${devShare}</td>
+                        </tr>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            try {
+                const response = await fetch('/api/dev_sales', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: currentUser.USER_ID })
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    summary = result.data[0]
+                }
+            } catch (error) {
+                console.error('Fetch error:', error)
+            }
+
+            document.getElementById('devTotalRevenue').textContent = `₱${summary.TOTAL_SALES.toFixed(2)}`;
+            document.getElementById('devTotalAdminShare').textContent = `₱${summary.ADMIN_SHARE.toFixed(2)}`;
+            document.getElementById('devTotalDevShare').textContent = `₱${summary.DEV_SALES.toFixed(2)}`;
+            //document.getElementById('devTotalGamePrice').textContent = `₱${parseFloat(totalPrice).toFixed(2)}`;
+            document.getElementById('devTotalPurchases').textContent = `${summary.TOTAL_PURCHASES}`;
+        }
+        window.onload = loadDevRevenueTable;
+    </script>
+</body>
+
+</html>
