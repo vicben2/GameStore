@@ -419,6 +419,60 @@ app.post('/api/review', async (req, res) => {
     }
 });
 
+//get sales
+app.post('/api/dev_sales', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId } = req.body
+
+        const request = pool.request()
+        request.input('DEV_ID', sql.Int, userId)
+
+        await request.execute('SP_GET_SALES_REPORT_BY_DEV').then(async (result) => {
+            res.send({ success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+app.post('/api/dev_per_game_sales', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { userId } = req.body
+
+        const request = pool.request()
+        request.input('DEV_ID', sql.Int, userId)
+
+        await request.execute('SP_GET_PER_GAME_SALES_REPORT_BY_DEV').then(async (result) => {
+            res.send({ success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+app.get('/api/all_game_sales', async (req, res) => {
+    try {
+        const pool = await connect()
+        const request = pool.request()
+
+        await request.execute('SP_GET_ALL_PER_GAME_SALES').then(async (result) => {
+            res.send({ success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 
 //listener
 app.listen(port, () => {

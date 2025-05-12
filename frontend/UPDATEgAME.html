@@ -209,7 +209,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="game-price">Price ($)</label>
+                <label for="game-price">Price (₱)</label>
                 <input type="number" id="game-price" name="game_price" min="0" step="0.01" required>
             </div>
             <div class="form-group">
@@ -229,6 +229,7 @@
         // Load game data to edit
         const gameId = JSON.parse(sessionStorage.getItem('editGameIndex'))
         const currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
+        let game
         //const games = JSON.parse(sessionStorage.getItem('developerGames') || '[]');
 
         window.addEventListener("load", async function () {
@@ -252,7 +253,6 @@
             }
 
             //load game info
-            let game
             try {
                 const response = await fetch('/api/dev_games', {
                     method: 'POST',
@@ -276,7 +276,7 @@
 
             if (gameId === null) {
                 alert('No game selected for editing.');
-                window.location.href = 'dashboard_dev.html';
+                window.location.href = 'dashboard_dev.html?section=games';
             }
 
             document.getElementById('game-name').value = game.GAME_TITLE || '';
@@ -330,25 +330,31 @@
             const description = document.getElementById('game-description').value;
             const genre = document.getElementById('game-genre').value;
             const price = parseFloat(document.getElementById('game-price').value);
-            
-            const imgFile = document.getElementById("game-image").files[0]
 
-            const formData = new FormData();
-            formData.append('picture', imgFile);
+            const imgFile = document.getElementById("game-image").files[0]
             let img
-            try {
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok.");
+            if (imgFile != undefined) {
+                const formData = new FormData();
+                formData.append('picture', imgFile);
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok.");
+                    }
+                    const result = await response.json();
+                    img = result.path
+                    game.GAME_IMG = img
+                } catch (error) {
+                    console.error('Fetch error:', error)
                 }
-                const result = await response.json();
-                img = result.path
-            } catch (error) {
-                console.error('Fetch error:', error)
             }
+            else {
+                img = game.GAME_IMG
+            }
+
             /*
             games[editIndex] = game;
             sessionStorage.setItem('developerGames', JSON.stringify(games));
@@ -371,7 +377,7 @@
                 const result = await response.json();
                 if (result.success) {
                     alert(result.message)
-                    window.location.href = 'dashboard_dev.html'
+                    window.location.href = 'dashboard_dev.html?section=games'
                 }
             } catch (error) {
                 console.error('Fetch error:', error)

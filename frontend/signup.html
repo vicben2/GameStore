@@ -163,6 +163,8 @@
   </div>
 
   <script>
+    document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
+
     function convertDateFormat(dateStr) {
       return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
     }
