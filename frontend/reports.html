@@ -285,7 +285,7 @@
       const section = urlParams.get('sort')
 
       let orderBy = urlParams.get('sort') || "TOTAL_REVENUE"
-      let devFilter = urlParams.get('dev') || null
+      let devFilter = urlParams.get('dev') !== "all" ? urlParams.get('dev') : null
       let gameTitleFilter = urlParams.get('search') || null
 
       try {
@@ -328,7 +328,7 @@
           const result = await response.json();
           if (result.success) {
             const devsElem = document.getElementById("developerFilter")
-            devsElem.innerHTML = '<option value="">All Developers</option>'
+            devsElem.innerHTML = '<option value="all">All Developers</option>'
             let seen = new Set();
 
             const allDevs = result.data.filter(obj => {
@@ -384,6 +384,9 @@
         console.error('Fetch error:', error)
       }
       */
+      document.getElementById('sortBy').value = orderBy
+      document.getElementById('developerFilter').value = devFilter || "all"
+      document.getElementById('searchGame').value = gameTitleFilter
     }
 
     function processGames(games, purchases) {
