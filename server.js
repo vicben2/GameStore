@@ -458,12 +458,33 @@ app.post('/api/dev_per_game_sales', async (req, res) => {
     }
 });
 
-app.get('/api/all_game_sales', async (req, res) => {
+app.post('/api/all_game_sales', async (req, res) => {
+    try {
+        const pool = await connect()
+
+        const { orderBy, dev, gameTitle } = req.body
+
+        const request = pool.request()
+        request.input('ORDER_BY', sql.NVarChar(128), orderBy)
+        request.input('DEV', sql.NVarChar(128), dev)
+        request.input('GAME_TITLE', sql.NVarChar(128), gameTitle)
+
+        await request.execute('SP_GET_ALL_PER_GAME_SALES').then(async (result) => {
+            res.send({ success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
+app.get('/api/user_purchases', async (req, res) => {
     try {
         const pool = await connect()
         const request = pool.request()
 
-        await request.execute('SP_GET_ALL_PER_GAME_SALES').then(async (result) => {
+        await request.execute('SP_GET_ALL_USER_PURCHASES').then(async (result) => {
             res.send({ success: true, data: result.recordset })
         })
     } catch (err) {

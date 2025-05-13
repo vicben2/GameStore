@@ -1,34 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Reports - Admin</title>
+  <title>Admin Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
-    header { background: #1f1f1f; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-    header h1 { margin: 0; font-size: 2em; }
-    nav { display: flex; justify-content: center; background: #292929; padding: 15px; gap: 20px; }
-    nav a { color: #fff; text-decoration: none; font-size: 1.1em; padding: 10px 15px; border-radius: 5px; transition: background 0.3s; }
-    nav a:hover { background: #444; }
-    .content { padding: 40px; }
-    h2 { color: #f39c12; }
-    table { width: 100%; border-collapse: collapse; background: #1e1e1e; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 14px; text-align: left; }
-    th { background: #222; color: #f39c12; }
-    tr:nth-child(even) { background: #232323; }
-    tr:nth-child(odd) { background: #181818; }
-    .actions button { margin-right: 8px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-    .resolve-btn { background: #2ecc71; color: #fff; }
-    .actions button:hover { opacity: 0.85; }
-    footer { background: #1f1f1f; color: #aaa; text-align: center; padding: 15px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 25px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+      background-color: #333;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-links a {
+      color: #fff;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-size: 1.2em;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #575757;
+      transform: scale(1.05);
+      border-radius: 5px;
+    }
+
+    .content {
+      padding: 40px;
+      margin: 20px;
+      background-color: #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-card h3 {
+      color: #f39c12;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+
+    .stat-card .value {
+      font-size: 2em;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .game-reports {
+      margin-top: 30px;
+    }
+
+    .game-card {
+      background: #333;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .game-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .game-header img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #f39c12;
+    }
+
+    .game-info h2 {
+      color: #f39c12;
+      margin-bottom: 5px;
+    }
+
+    .game-info p {
+      color: #ccc;
+      margin-bottom: 5px;
+    }
+
+    .purchases-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .purchases-table th,
+    .purchases-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+
+    .purchases-table th {
+      background: #1f1f1f;
+      color: #f39c12;
+      font-weight: 600;
+    }
+
+    .purchases-table tr:hover {
+      background: #3a3a3a;
+    }
+
+    .total-revenue {
+      text-align: right;
+      padding: 15px;
+      background: #1f1f1f;
+      color: #f39c12;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 1.2em;
+    }
+
+    .search-filters {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .search-filters input,
+    .search-filters select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background: #333;
+      color: #fff;
+    }
+
+    .search-filters button {
+      padding: 10px 20px;
+      background: #f39c12;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-filters button:hover {
+      background: #e67e22;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      .game-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .purchases-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>Reports</h1>
+    <h1>Admin Reports</h1>
   </header>
-  <nav>
+  <nav class="nav-links">
     <a href="admin.html">Dashboard</a>
     <a href="manage-users.html">Manage Users</a>
     <a href="reports.html">Reports</a>
@@ -36,59 +233,445 @@
     <a href="logout.html">Logout</a>
   </nav>
   <div class="content">
-    <h2>Reports List</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Report ID</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>#101</td>
-          <td>User Issue</td>
-          <td>User reported for spam.</td>
-          <td>Pending</td>
-          <td class="actions"><button class="resolve-btn">Mark as Resolved</button></td>
-        </tr>
-        <tr>
-          <td>#102</td>
-          <td>Game Issue</td>
-          <td>Game not launching.</td>
-          <td>Pending</td>
-          <td class="actions"><button class="resolve-btn">Mark as Resolved</button></td>
-        </tr>
-        <tr>
-          <td>#103</td>
-          <td>Payment</td>
-          <td>Refund request for failed transaction.</td>
-          <td>Resolved</td>
-          <td class="actions"><button class="resolve-btn" disabled>Resolved</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="stats-container">
+      <div class="stat-card">
+        <h3>Total Games</h3>
+        <div class="value" id="totalGames">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Sales</h3>
+        <div class="value" id="totalSales">₱0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Users</h3>
+        <div class="value" id="totalUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Developers</h3>
+        <div class="value" id="totalDevelopers">0</div>
+      </div>
+    </div>
+
+    <div class="search-filters">
+      <input type="text" id="searchGame" placeholder="Search games...">
+      <select id="developerFilter">
+        <option value="">All Developers</option>
+      </select>
+      <select id="sortBy">
+        <option value="TOTAL_REVENUE">Sort by Sales</option>
+        <option value="PRICE">Sort by Price</option>
+        <option value="PUB_DATE">Sort by Date</option>
+      </select>
+      <button onclick="applyFilters()">Apply Filters</button>
+    </div>
+
+    <div class="game-reports" id="gameReports">
+      <!-- Game reports will be dynamically inserted here -->
+    </div>
   </div>
-  <footer>
-    &copy; 2025 Game Store Admin Panel. All rights reserved.
-  </footer>
+
   <script>
-    // Make the 'Mark as Resolved' button responsive
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.resolve-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          if (btn.disabled) return;
-          // Find the row and update status
-          const row = btn.closest('tr');
-          row.querySelectorAll('td')[3].textContent = 'Resolved';
-          btn.textContent = 'Resolved';
-          btn.disabled = true;
+    function convertDateFormat(dateStr) {
+      return dateStr.match(/\d\d\d\d-\d\d-\d\d/)
+    }
+
+    let games
+    let purchases
+
+    loadReports()
+    // Load and display reports
+    async function loadReports() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const section = urlParams.get('sort')
+
+      let orderBy = urlParams.get('sort') || "TOTAL_REVENUE"
+      let devFilter = urlParams.get('dev') || null
+      let gameTitleFilter = urlParams.get('search') || null
+
+      try {
+        // Start both fetches concurrently
+        const [response1, response2] = await Promise.all([
+          fetch('api/all_game_sales', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderBy, dev: devFilter, gameTitle: gameTitleFilter })
+          }),
+          fetch('api/user_purchases')
+        ]);
+
+        // Check if both responses are OK
+        if (!response1.ok || !response2.ok) {
+          throw new Error('One of the network responses was not ok');
+        }
+
+        // Parse both responses as JSON
+        games = await response1.json()
+        purchases = await response2.json()
+
+        processGames(games.data, purchases.data)
+
+        try {
+          const response = await fetch('/api/all_game_sales', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderBy, dev: null, gameTitle: null })
+          })
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          const result = await response.json();
+          if (result.success) {
+            const devsElem = document.getElementById("developerFilter")
+            devsElem.innerHTML = '<option value="">All Developers</option>'
+            let seen = new Set();
+
+            const allDevs = result.data.filter(obj => {
+              if (seen.has(obj.USERNAME)) {
+                return false;
+              } else {
+                seen.add(obj.USERNAME);
+                return true;
+              }
+            });
+
+            allDevs.forEach(game => {
+              devsElem.innerHTML += `<option value="${game.USERNAME}">${game.USERNAME}</option>`
+            });
+          }
+        } catch (error) {
+          console.error('Fetch error:', error)
+        }
+
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
+
+      /*
+      let usersCount
+      try {
+        const response = await fetch('api/get_count?entity=users')
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          usersCount = result.data[0].USERS_COUNT
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
+      let devCount
+      try {
+        const response = await fetch('api/get_count?entity=devs')
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          devCount = result.data[0].DEV_COUNT
+        }
+      } catch (error) {
+        console.error('Fetch error:', error)
+      }
+      */
+    }
+
+    function processGames(games, purchases) {
+      let seen = new Set();
+      const currentlyDisplayedGames = games.filter(obj => {
+        if (seen.has(obj.GAME_ID)) {
+          return false;
+        } else {
+          seen.add(obj.GAME_ID);
+          return true;
+        }
+      });
+
+      let usersCount = 0
+      seen = new Set()
+      currentlyDisplayedGames.forEach(game => {
+        purchases.filter(obj => {
+          if (game.GAME_ID === obj.GAME_ID) {
+            if (seen.has(obj.USERNAME)) {
+              return false;
+            } else {
+              seen.add(obj.USERNAME);
+              usersCount += 1
+              return true;
+            }
+          }
         });
       });
-    });
+      document.getElementById('totalUsers').textContent = usersCount;
+
+      seen = new Set()
+      const currentDevs = currentlyDisplayedGames.filter(obj => {
+        if (seen.has(obj.USERNAME)) {
+          return false;
+        } else {
+          seen.add(obj.USERNAME);
+          return true;
+        }
+      });
+      document.getElementById('totalDevelopers').textContent = currentDevs.length
+
+      let totalSales = 0;
+      // Clear existing reports
+      gameReports.innerHTML = '';
+
+      if (games.length === 0) {
+        gameReports.innerHTML = '<div class="no-data">No games found</div>';
+        return;
+      }
+
+      games.forEach(game => {
+        const gameRevenue = game.TOTAL_REVENUE
+        totalSales += gameRevenue;
+        const title = game.GAME_TITLE
+        let developer = game.USERNAME
+        let releaseDate = convertDateFormat(game.PUB_DATE)
+        const description = game.GAME_DESC;
+        const image = game.GAME_IMG;
+        const price = game.PRICE
+
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        gameCard.innerHTML = `
+          <div class="game-header">
+            <img src="${image}" alt="${title}">
+            <div class="game-info">
+              <h2>${title}</h2>
+              <p>Developer: ${developer}</p>
+              <p>Price: ₱${price.toFixed(2)}</p>
+              <p>Release Date: ${releaseDate}</p>
+              <p>Description: ${description}</p>
+            </div>
+          </div>
+          <table class="purchases-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Purchase Date</th>
+                <th>Price</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${purchases.map(purchase => {
+          if (purchase.GAME_ID === game.GAME_ID) {
+            const userName = purchase.USERNAME;
+            const purchaseDate = convertDateFormat(purchase.ORDER_DATE)// ? new Date(purchase.date).toLocaleDateString() : 'N/A';
+            const purchasePrice = purchase.PRICE.toFixed(2)
+            const quantity = purchase.QTY
+            return `<tr>
+                          <td>${userName}</td>
+                          <td>${purchaseDate}</td>
+                          <td>₱${purchasePrice}</td>
+                          <td>${quantity}</td>
+                        </tr>`
+          }
+        }).join('')}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="total-revenue">
+                      Total Revenue: ₱${parseFloat(gameRevenue).toFixed(2)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            `;
+        gameReports.appendChild(gameCard);
+      });
+
+      document.getElementById('totalSales').textContent = `₱${totalSales.toFixed(2)}`;
+
+      seen = new Set();
+      const ung = games.filter(obj => {
+        if (seen.has(obj.GAME_ID)) {
+          return false;
+        } else {
+          seen.add(obj.GAME_ID);
+          return true;
+        }
+      });
+      document.getElementById("totalGames").textContent = ung.length
+    }
+
+    /*
+    // Remove window.onload = loadReports; and only populate developer filter on load
+    window.onload = function () {
+      // Populate developer filter
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const developers = users.filter(u => u.role === 'developer');
+      const developerFilter = document.getElementById('developerFilter');
+      developers.forEach(dev => {
+        const option = document.createElement('option');
+        option.value = dev.username;
+        option.textContent = dev.username;
+        developerFilter.appendChild(option);
+      });
+      // Clear game reports on load
+      document.getElementById('gameReports').innerHTML = '';
+    };
+    */
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchGame').value.toLowerCase();
+      const developer = document.getElementById('developerFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+      let suffix = "?"
+
+      if (searchTerm) {
+        suffix += "&search=" + searchTerm
+      }
+      if (developer) {
+        suffix += "&dev=" + developer
+      }
+      if (sortBy) {
+        suffix += "&sort=" + sortBy
+      }
+
+      window.location.href = "reports.html" + suffix
+
+      /*
+      const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
+      const purchases = JSON.parse(localStorage.getItem('gamePurchases') || '[]');
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const gameReports = document.getElementById('gameReports');
+      gameReports.innerHTML = '';
+
+      if (!developer) {
+        gameReports.innerHTML = '<div class="no-data">Please select a developer to view their games.</div>';
+        return;
+      }
+
+      // Find the selected developer's user object
+      const devUser = users.find(u => u.username.toLowerCase() === developer.toLowerCase() && u.role === 'developer');
+      if (!devUser) {
+        gameReports.innerHTML = '<div class="no-data">Developer not found.</div>';
+        return;
+      }
+
+      // Filter games by developer
+      let filteredGames = games.filter(game => {
+        // Try to match by developer username, developerName, or developerId
+        let devName = (game.developer || game.developerName || '').toLowerCase();
+        let devId = game.developerId ? String(game.developerId).toLowerCase() : '';
+        return (
+          devName === developer.toLowerCase() ||
+          devId === String(devUser.id).toLowerCase() ||
+          devId === devUser.username.toLowerCase()
+        ) && (game.title || '').toLowerCase().includes(searchTerm);
+      });
+
+      // Sort games
+      filteredGames.sort((a, b) => {
+        const aPurchases = purchases.filter(p => p.gameId === a.id);
+        const bPurchases = purchases.filter(p => p.gameId === b.id);
+        switch (sortBy) {
+          case 'sales':
+            return bPurchases.length - aPurchases.length;
+          case 'price':
+            return (b.price || 0) - (a.price || 0);
+          case 'date':
+            return new Date(b.releaseDate) - new Date(a.releaseDate);
+          default:
+            return 0;
+        }
+      });
+
+      if (filteredGames.length === 0) {
+        gameReports.innerHTML = '<div class="no-data">No games found for the selected developer.</div>';
+        return;
+      }
+
+      filteredGames.forEach(game => {
+        const gamePurchases = purchases.filter(p => p.gameId === game.id);
+        const gameRevenue = gamePurchases.reduce((sum, p) => sum + (p.price || 0), 0);
+        const adminShare = (gameRevenue * 0.3).toFixed(2);
+        const developerShare = (gameRevenue * 0.7).toFixed(2);
+
+        const title = game.title || game.name || 'N/A';
+        const image = game.image || 'placeholder.jpg';
+        const price = game.price !== undefined ? game.price : 'N/A';
+        let releaseDate = game.releaseDate || game.dateReleased || game.date || null;
+        let releaseDateStr = 'N/A';
+        if (releaseDate) {
+          const d = new Date(releaseDate);
+          releaseDateStr = isNaN(d) ? 'N/A' : d.toLocaleDateString();
+        }
+        const description = game.description || 'No description available';
+
+        // Always show the selected developer's name
+        const developerName = devUser.username || devUser.name || 'N/A';
+
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        gameCard.innerHTML = `
+          <div class="game-header">
+            <img src="${image}" alt="${title}">
+            <div class="game-info">
+              <h2>${title}</h2>
+              <p><strong>Created by:</strong> ${developerName}</p>
+              <p>Price: ₱${price}</p>
+              <p>Release Date: ${releaseDateStr}</p>
+              <p>Description: ${description}</p>
+            </div>
+          </div>
+          <table class="purchases-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Purchase Date</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${gamePurchases.map(purchase => {
+          let userName = purchase.userName;
+          if (!userName && purchase.userId) {
+            const user = users.find(u => String(u.id) === String(purchase.userId) || u.username === purchase.userId);
+            userName = user ? (user.username || user.name) : 'N/A';
+          }
+          userName = userName || 'N/A';
+          const purchaseDate = purchase.date ? new Date(purchase.date).toLocaleDateString() : 'N/A';
+          const purchasePrice = purchase.price !== undefined ? `₱${purchase.price}` : 'N/A';
+          return `
+                  <tr>
+                    <td>${userName}</td>
+                    <td>${purchaseDate}</td>
+                    <td>${purchasePrice}</td>
+                  </tr>
+                `;
+        }).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="total-revenue">
+                  Total Revenue: ₱${gameRevenue} <br>
+                  <span style='color:#f39c12'>Admin Share (30%): ₱${adminShare}</span> <br>
+                  <span style='color:#27ae60'>Developer Share (70%): ₱${developerShare}</span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        `;
+        gameReports.appendChild(gameCard);
+      });
+      */
+    }
   </script>
 </body>
-</html> 
+
+</html>
