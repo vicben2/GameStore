@@ -473,6 +473,21 @@ app.get('/api/all_game_sales', async (req, res) => {
     }
 });
 
+app.get('/api/user_purchases', async (req, res) => {
+    try {
+        const pool = await connect()
+        const request = pool.request()
+
+        await request.execute('SP_GET_ALL_USER_PURCHASES').then(async (result) => {
+            res.send({ success: true, data: result.recordset })
+        })
+    } catch (err) {
+        console.error('SQL error', err);
+    } finally {
+        await sql.close();
+    }
+});
+
 
 //listener
 app.listen(port, () => {
