@@ -205,7 +205,13 @@
       let data
 
       try {
-        const response = await fetch('/api/all_game_sales')
+        const response = await fetch('/api/all_game_sales', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderBy: "TOTAL_REVENUE", dev: null, gameTitle: null })
+          })
 
         if (!response.ok) {
           throw new Error('Network response was not ok');

@@ -258,9 +258,9 @@
         <option value="">All Developers</option>
       </select>
       <select id="sortBy">
-        <option value="sales">Sort by Sales</option>
-        <option value="price">Sort by Price</option>
-        <option value="date">Sort by Date</option>
+        <option value="TOTAL_REVENUE">Sort by Sales</option>
+        <option value="PRICE">Sort by Price</option>
+        <option value="PUB_DATE">Sort by Date</option>
       </select>
       <button onclick="applyFilters()">Apply Filters</button>
     </div>
@@ -281,16 +281,23 @@
     loadReports()
     // Load and display reports
     async function loadReports() {
-      /*
-      const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
-      const purchases = JSON.parse(localStorage.getItem('gamePurchases') || '[]');
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const gameReports = document.getElementById('gameReports');
-      */
+      const urlParams = new URLSearchParams(window.location.search);
+      const section = urlParams.get('sort')
+
+      let orderBy = urlParams.get('sort') || "TOTAL_REVENUE"
+      let devFilter = urlParams.get('dev') || null
+      let gameTitleFilter = urlParams.get('search') || null
+
       try {
         // Start both fetches concurrently
         const [response1, response2] = await Promise.all([
-          fetch('api/all_game_sales'),
+          fetch('api/all_game_sales', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderBy, dev: devFilter, gameTitle: gameTitleFilter })
+          }),
           fetch('api/user_purchases')
         ]);
 
@@ -305,10 +312,47 @@
 
         processGames(games.data, purchases.data)
 
+        try {
+          const response = await fetch('/api/all_game_sales', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderBy, dev: null, gameTitle: null })
+          })
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          const result = await response.json();
+          if (result.success) {
+            const devsElem = document.getElementById("developerFilter")
+            devsElem.innerHTML = '<option value="">All Developers</option>'
+            let seen = new Set();
+
+            const allDevs = result.data.filter(obj => {
+              if (seen.has(obj.USERNAME)) {
+                return false;
+              } else {
+                seen.add(obj.USERNAME);
+                return true;
+              }
+            });
+
+            allDevs.forEach(game => {
+              devsElem.innerHTML += `<option value="${game.USERNAME}">${game.USERNAME}</option>`
+            });
+          }
+        } catch (error) {
+          console.error('Fetch error:', error)
+        }
+
       } catch (error) {
         console.error('Fetch error:', error);
       }
 
+      /*
       let usersCount
       try {
         const response = await fetch('api/get_count?entity=users')
@@ -324,8 +368,6 @@
       } catch (error) {
         console.error('Fetch error:', error)
       }
-      document.getElementById('totalUsers').textContent = usersCount;
-
       let devCount
       try {
         const response = await fetch('api/get_count?entity=devs')
@@ -341,10 +383,48 @@
       } catch (error) {
         console.error('Fetch error:', error)
       }
-      document.getElementById('totalDevelopers').textContent = devCount
+      */
     }
 
     function processGames(games, purchases) {
+      let seen = new Set();
+      const currentlyDisplayedGames = games.filter(obj => {
+        if (seen.has(obj.GAME_ID)) {
+          return false;
+        } else {
+          seen.add(obj.GAME_ID);
+          return true;
+        }
+      });
+
+      let usersCount = 0
+      seen = new Set()
+      currentlyDisplayedGames.forEach(game => {
+        purchases.filter(obj => {
+          if (game.GAME_ID === obj.GAME_ID) {
+            if (seen.has(obj.USERNAME)) {
+              return false;
+            } else {
+              seen.add(obj.USERNAME);
+              usersCount += 1
+              return true;
+            }
+          }
+        });
+      });
+      document.getElementById('totalUsers').textContent = usersCount;
+
+      seen = new Set()
+      const currentDevs = currentlyDisplayedGames.filter(obj => {
+        if (seen.has(obj.USERNAME)) {
+          return false;
+        } else {
+          seen.add(obj.USERNAME);
+          return true;
+        }
+      });
+      document.getElementById('totalDevelopers').textContent = currentDevs.length
+
       let totalSales = 0;
       // Clear existing reports
       gameReports.innerHTML = '';
@@ -416,7 +496,7 @@
 
       document.getElementById('totalSales').textContent = `₱${totalSales.toFixed(2)}`;
 
-      const seen = new Set();
+      seen = new Set();
       const ung = games.filter(obj => {
         if (seen.has(obj.GAME_ID)) {
           return false;
@@ -428,6 +508,7 @@
       document.getElementById("totalGames").textContent = ung.length
     }
 
+    /*
     // Remove window.onload = loadReports; and only populate developer filter on load
     window.onload = function () {
       // Populate developer filter
@@ -443,11 +524,27 @@
       // Clear game reports on load
       document.getElementById('gameReports').innerHTML = '';
     };
+    */
 
     function applyFilters() {
       const searchTerm = document.getElementById('searchGame').value.toLowerCase();
       const developer = document.getElementById('developerFilter').value;
       const sortBy = document.getElementById('sortBy').value;
+      let suffix = "?"
+
+      if (searchTerm) {
+        suffix += "&search=" + searchTerm
+      }
+      if (developer) {
+        suffix += "&dev=" + developer
+      }
+      if (sortBy) {
+        suffix += "&sort=" + sortBy
+      }
+
+      window.location.href = "reports.html" + suffix
+
+      /*
       const games = JSON.parse(localStorage.getItem('developerGames') || '[]');
       const purchases = JSON.parse(localStorage.getItem('gamePurchases') || '[]');
       const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -572,6 +669,7 @@
         `;
         gameReports.appendChild(gameCard);
       });
+      */
     }
   </script>
 </body>
